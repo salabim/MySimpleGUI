@@ -56,6 +56,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
     can still use sg.FindElement. But, I wouldn't recommend that ...
 
 -   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
+
         ```
         auto_size_buttons() to get/set DEFAULT_AUTOSIZE_BUTTONS
         auto_size_text() to get/set DEFAULT_AUTOSIZE_TEXT
