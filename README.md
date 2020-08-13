@@ -21,14 +21,14 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   Attribute notation to Window and the values parameter as returned from Window.read()
 
-    So, if we specified sg.Input("      ", key="name"),
-    we can retrieve the value via values["name"] as usual but now also as values.name !
+    So, if we specified `sg.Input("      ", key="name")`,
+    we can retrieve the value via `values["name"]` as usual but now also as `values.name` !
     Of course, in order to be able to do that the key has to be a name that is accepted as an attribute.
 
     But, there are some handy automatic conversions provided. If a key is a number (which happens if
-    you don't specify a key parameter), the key can be accessed as k<number> or key<number> or _<number>, e.g.
-    the key 0 can be retrieved with the usual values[0], but also with values.k0, values.key0 or values._0.
-    And even values["key0"], although this seems a bit too much.
+    you don't specify a key parameter), the key can be accessed as `k`*number* or `key`*number* or `_`*number*, e.g.
+    the key `0` can be retrieved with the usual `values[0]`, but also with `values.k0`, `values.key0` or `values._0`.
+    And even `values["key0"]`, although this seems a bit too much...
 
     But there's more: if a key contains `sg.WRITE_ONLY_KEY` or `sg.TIMEOUT_KEY`, the key can be also accessed without
     these constants. So if we had defined `sg.Text("ab", key="zipcode" + sg.WRITE_ONLY_KEY)`,
@@ -39,7 +39,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
     And finally, there is normalization, which means that a given key is translated according to the following rules
     - if it is the null string, starts with a digit or is a keyword, a _ is added at the front
-    - if there are any characters that are not acceptable in an identiefier, these are replaced by _
+    - if there are any characters that are not acceptable in an identifier, these are replaced by `_`.
     So `sg.Text("ab", key="name-address(zipcode)")`,
     can also be accessed as `values.name_address_zipcode_` or (less useful) `values["name_address_zipcode"]`
 
@@ -159,8 +159,8 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
     *   PopupErrors generated within PySimpleGUI will now suppress the popup and raise a RuntimeError
         with the information that would normally be shown in the popup.
-        Setting SUPPRESS_ERROR_POPUPS to True will now be (silently) ignored.
+        Setting `suppress_error_popups=True` in SetOptions will now be (silently) ignored.
 
     *   MySimpleGUI tries to capture all exceptions where output is generated. If so, 
         the exception is actually raised along with the information that would normally be printed.
-        This behaviour can be disabled with sg.raise_errors(False).
+        This behaviour can be disabled with `sg.raise_errors(False)`.
