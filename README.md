@@ -143,6 +143,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
     ```
 
     So, we can now do:
+    
         from MySimpleGUI import ansi
         ...
         window = [[sg.Multiline, size=(80, 10), key="results"]]
