@@ -1,0 +1,29 @@
+Changelog MySimpleGUI
+=====================
+
+vs 1.1.0  2020-08-13
+--------------------
+Complete change of code. Instead of importing PySimpleGUI, the complete source code is now read from
+PySimpleGUI and patched where required. This is a much more flexible approach that also allows for
+future patches to be applied relatively easy.
+
+SUPPRESS_ERROR_POPUPS is now always False, even if you try and set it.
+
+Exception and PopupError handling included.
+
+The generated code can be run as a separate (forked) package, if required.
+
+vs 1.0.1  2020-08-06
+--------------------
+Renamed to MySimpleGUI
+
+Added functionality:
+- functions to get/set the global variables as used in SetOptions
+- The function ChangeLookAndFeel or change_look_and_feel as well theme now raises a ValueError
+  if a non existing theme is given
+- MultiLine now supports ANSI colors and can be used as a file.
+
+
+vs 1.0.0  2020-07-28
+--------------------
+Initial version called PySimpleGUI_attributes
