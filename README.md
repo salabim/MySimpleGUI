@@ -6,7 +6,7 @@ This means that -in principle- future versions of PySimpleGUI will be supported.
 
 Requirements: installed PySimpleGUI >= 4.27.4, Python >= 3.3
 
-##Why MySimpleGui?
+**Why MySimpleGui?**
 
 I am a big fan of MySimpleGUI, but don't like all of its functionality and think that there are
 some enhancements possible. I tried to convince the PySimpleGUI developer, but he doesn't want to
@@ -16,11 +16,11 @@ supported by MySimpleGUI.
 Therefore, I choose another way: patching the original PySimpleGUI code at runtime. This is not a 100%
 guarantee that future PySimpleGUI version will work, but the way it's done is pretty stable.
 
-Usage: import MySimpleGUI as sg
+Usage: `import MySimpleGUI as sg`
 
 This imports the whole PySimpleGUI package, with some added functionality:
 
--   Attribute notation to Window and the values parameter as returned from Window.read()
+-   Attribute notation to Window and the values parameter as returned from `Window.read()`.
 
     So, if we specified `sg.Input("      ", key="name")`,
     we can retrieve the value via `values["name"]` as usual but now also as `values.name` !
