@@ -57,7 +57,6 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
 
-        ```
         auto_size_buttons() to get/set DEFAULT_AUTOSIZE_BUTTONS
         auto_size_text() to get/set DEFAULT_AUTOSIZE_TEXT
         autoclose_time() to get/set DEFAULT_AUTOCLOSE_TIME
@@ -96,14 +95,15 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ttk_theme() to get/set DEFAULT_TTK_THEME
         use_ttk_buttons() to get/set USE_TTK_BUTTONS
         window_location() to get/set DEFAULT_WINDOW_LOCATION
-        ```
 
     This can be very handy when a global variable has to be set during a certain operation and reset to
     its original value afterwards, like
+    
         org_suppress_key_guessing = suppress_key_guessing()
         suppress_key_guessing(True)
         window.find_element("Result").update(123)
         suppress_key_guessing(org_suppress_key_guessing)
+        
     to make the find_element use key guessing, although I have no idea why someone would like that.
 
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
