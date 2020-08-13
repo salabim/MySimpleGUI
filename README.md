@@ -56,6 +56,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
     can still use sg.FindElement. But, I wouldn't recommend that ...
 
 -   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
+        ```
         auto_size_buttons() to get/set DEFAULT_AUTOSIZE_BUTTONS
         auto_size_text() to get/set DEFAULT_AUTOSIZE_TEXT
         autoclose_time() to get/set DEFAULT_AUTOCLOSE_TIME
@@ -94,6 +95,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ttk_theme() to get/set DEFAULT_TTK_THEME
         use_ttk_buttons() to get/set USE_TTK_BUTTONS
         window_location() to get/set DEFAULT_WINDOW_LOCATION
+        ```
 
     This can be very handy when a global variable has to be set during a certain operation and reset to
     its original value afterwards, like
@@ -116,6 +118,8 @@ This imports the whole PySimpleGUI package, with some added functionality:
 -   More interesting is the support of ANSI colours, both for foreground and background colours.
     The escape sequences associated with the various colours can be used as such but also via the ansi dict like
     data structure. Available colors/commands are
+    
+    ```
     ansi["reset"]      or ansi.reset     or "\x1b[0m"
     ansi["black"}      or ansi.black     or "\x1b[30m"
     ansi["red"]        or ansi.red       or "\x1b[31m"
@@ -135,6 +139,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
     ansi["oncyan"]     or ansi.oncyan    or "\x1b[46m"
     ansi["onwhite"]    or ansi.onwhite   or "\x1b[47m"
     ansi["ondefault"]  or ansi.ondefault or "\x1b[49m"
+    ```
 
     So, we can now do:
         from MySimpleGUI import ansi
