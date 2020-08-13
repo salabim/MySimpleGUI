@@ -18,6 +18,8 @@ guarantee that future PySimpleGUI version will work, but the way it's done is pr
 
 Usage: `import MySimpleGUI as sg`
 
+**Functionality**
+
 This imports the whole PySimpleGUI package, with some added functionality:
 
 -   Attribute notation to Window and the values parameter as returned from `Window.read()`.
