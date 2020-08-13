@@ -30,8 +30,8 @@ This imports the whole PySimpleGUI package, with some added functionality:
     the key 0 can be retrieved with the usual values[0], but also with values.k0, values.key0 or values._0.
     And even values["key0"], although this seems a bit too much.
 
-    But there's more: if a key contains sg.WRITE_ONLY_KEY or sg.TIMEOUT_KEY, the key can be also accessed without
-    these constants. So if we had defined sg.Text("ab", key="zipcode" + sg.WRITE_ONLY_KEY),
+    But there's more: if a key contains `sg.WRITE_ONLY_KEY` or `sg.TIMEOUT_KEY`, the key can be also accessed without
+    these constants. So if we had defined `sg.Text("ab", key="zipcode" + sg.WRITE_ONLY_KEY)`,
     we can get the values as
         values["zipcode" + sg.WRITE_ONLY_KEY]
         values["zipcode"]
@@ -40,20 +40,20 @@ This imports the whole PySimpleGUI package, with some added functionality:
     And finally, there is normalization, which means that a given key is translated according to the following rules
     - if it is the null string, starts with a digit or is a keyword, a _ is added at the front
     - if there are any characters that are not acceptable in an identiefier, these are replaced by _
-    So sg.Text("ab", key="name-address(zipcode)"),
-    can also be accessed as values.name_address_zipcode_ or (less useful) values["name_address_zipcode"]
+    So `sg.Text("ab", key="name-address(zipcode)")`,
+    can also be accessed as `values.name_address_zipcode_` or (less useful) `values["name_address_zipcode"]`
 
     In the example above, I used values. But all the same functionality applies to a window lookup as well!
-    So instead of window["result"], we may also write window.result. And instead of window["--result--"] we can write
-    window.__result__, although I don't see the point of using a key like "--result__", but the developer of
+    So instead of `window["result"]`, we may also write `window.result`. And instead of `window["--result--"]` we can write
+    `window.__result__`, although I don't see the point of using a key like "--result--", but the developer of
     PySimpleGUI seems to prefer that over "result".
 
     Note that the above functionality is only provided if the key is a string or a number.
 
-    When used as window[key], an ordinary a KeyError will be raised if a key cannot be found.
+    When used as `window[key]`, an ordinary a KeyError will be raised if a key cannot be found.
     So goodbye to the error popups with incomplete traceback information (IMHO).
-    It also doesn't do any automatic replacement with the 'closest' key. If that functionality is what you want you
-    can still use sg.FindElement. But, I wouldn't recommend that ...
+    It also doesn't do any automatic replacement with the *closest* key. If that functionality is what you want you
+    can still use `sg.FindElement`. But, I wouldn't recommend that ...
 
 -   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
 
