@@ -185,7 +185,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ```
         PySimpleGUI will print a message
         `Exception during adding new theme unhashable type: 'dict` without any indication
-        where this error occured and just continues, so you might even miss it easily.
+        what kiund of exception, where this error occured and will just continue, so you might even miss it easily.
         
         On the other hand, MySimpleGUI will raise and exception and generate the following useful informatio about the why and where:
         ```
