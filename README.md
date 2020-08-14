@@ -59,6 +59,35 @@ This imports the whole PySimpleGUI package, with some added functionality:
     So goodbye to the error popups with incomplete traceback information (IMHO).
     It also doesn't do any automatic replacement with the *closest* key. If that functionality is what you want you
     can still use `sg.FindElement`. But, I wouldn't recommend that ...
+    
+    Just one example of MySimpleGUI's attribute approach.
+    The PySimpleGUI shows this recipe:
+    
+    ```
+    import PySimpleGUI as sg
+
+    sg.theme('BluePurple')
+
+    layout = [[sg.Text('Your typed chars appear here:'), sg.Text(size=(15,1), key='-OUTPUT-')],
+              [sg.Input(key='-IN-')],
+              [sg.Button('Show'), sg.Button('Exit')]]
+
+    window = sg.Window('Pattern 2B', layout)
+
+    while True:  # Event Loop
+        event, values = window.read()
+        print(event, values)
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        if event == 'Show':
+            # Update the "output" text element to be the value of "input" element
+            window['-OUTPUT-'].update(values['-IN-'])
+
+    window.close()   
+    ```
+    
+    
+    
 
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
     So no more crazy random themes with a printed out warning, that can be easily missed, and not traced to
