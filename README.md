@@ -8,7 +8,7 @@ Requirements: installed PySimpleGUI >= 4.27.4, Python >= 3.3
 
 **Why MySimpleGui?**
 
-I am a big fan of MySimpleGUI, but don't like all of its functionality and think that there are
+I am a big fan of PySimpleGUI, but don't like all of its functionality and think that there are
 some enhancements possible. I tried to convince the PySimpleGUI developer, but he doesn't want to
 implement these for various reasons. The most obvious way is then to fork the package and modify
 it. The disadvantage of this approach is that future versions of PySimpleGUI are not automatically
@@ -16,7 +16,9 @@ supported by MySimpleGUI.
 Therefore, I choose another way: patching the original PySimpleGUI code at runtime. This is not a 100%
 guarantee that future PySimpleGUI version will work, but the way it's done is pretty stable.
 
-Usage: `import MySimpleGUI as sg`
+**Usage**
+
+import MySimpleGUI as sg`
 
 **Functionality**
 
