@@ -60,57 +60,6 @@ This imports the whole PySimpleGUI package, with some added functionality:
     It also doesn't do any automatic replacement with the *closest* key. If that functionality is what you want you
     can still use `sg.FindElement`. But, I wouldn't recommend that ...
 
--   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
-
-        auto_size_buttons() to get/set DEFAULT_AUTOSIZE_BUTTONS
-        auto_size_text() to get/set DEFAULT_AUTOSIZE_TEXT
-        autoclose_time() to get/set DEFAULT_AUTOCLOSE_TIME
-        background_color() to get/set DEFAULT_BACKGROUND_COLOR
-        border_width() to get/set DEFAULT_BORDER_WIDTH
-        button_color() to get/set DEFAULT_BUTTON_COLOR
-        button_element_size() to get/set DEFAULT_BUTTON_ELEMENT_SIZE
-        debug_win_size() to get/set DEFAULT_DEBUG_WINDOW_SIZE
-        element_background_color() to get/set DEFAULT_ELEMENT_BACKGROUND_COLOR
-        element_padding() to get/set DEFAULT_ELEMENT_PADDING
-        element_size() to get/set DEFAULT_ELEMENT_SIZE
-        element_text_color() to get/set DEFAULT_ELEMENT_TEXT_COLOR
-        enable_treeview_869_patch() to get/set ENABLE_TREEVIEW_869_PATCH
-        error_button_color() to get/set DEFAULT_ERROR_BUTTON_COLOR
-        font() to get/set DEFAULT_FONT
-        input_elements_background_color() to get/set DEFAULT_INPUT_ELEMENTS_COLOR
-        input_text_color() to get/set DEFAULT_INPUT_TEXT_COLOR
-        margins() to get/set DEFAULT_MARGINS
-        message_box_line_width() to get/set MESSAGE_BOX_LINE_WIDTH
-        progress_meter_border_depth() to get/set DEFAULT_PROGRESS_BAR_BORDER_WIDTH
-        progress_meter_color() to get/set DEFAULT_PROGRESS_BAR_COLOR
-        progress_meter_relief() to get/set DEFAULT_PROGRESS_BAR_RELIEF
-        progress_meter_size() to get/set DEFAULT_PROGRESS_BAR_SIZE
-        scrollbar_color() to get/set DEFAULT_SCROLLBAR_COLOR
-        slider_border_width() to get/set DEFAULT_SLIDER_BORDER_WIDTH
-        slider_orientation() to get/set DEFAULT_SLIDER_ORIENTATION
-        slider_relief() to get/set DEFAULT_SLIDER_RELIEF
-        suppress_error_popups() to get/set SUPPRESS_ERROR_POPUPS
-        suppress_key_guessing() to get/set SUPPRESS_KEY_GUESSING
-        suppress_raise_key_errors() to get/set SUPPRESS_RAISE_KEY_ERRORS
-        text_color() to get/set DEFAULT_TEXT_COLOR
-        text_element_background_color() to get/set DEFAULT_TEXT_ELEMENT_BACKGROUND_COLOR
-        text_justification() to get/set DEFAULT_TEXT_JUSTIFICATION
-        tooltip_font() to get/set TOOLTIP_FONT
-        tooltip_time() to get/set DEFAULT_TOOLTIP_TIME
-        ttk_theme() to get/set DEFAULT_TTK_THEME
-        use_ttk_buttons() to get/set USE_TTK_BUTTONS
-        window_location() to get/set DEFAULT_WINDOW_LOCATION
-
-    This can be very handy when a global variable has to be set during a certain operation and reset to
-    its original value afterwards, like
-    
-        org_suppress_key_guessing = suppress_key_guessing()
-        suppress_key_guessing(True)
-        window.find_element("Result").update(123)
-        suppress_key_guessing(org_suppress_key_guessing)
-        
-    to make the find_element use key guessing, although I have no idea why someone would like that.
-
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
     So no more crazy random themes with a printed out warning, that can be easily missed, and not traced to
     where it was called from.
@@ -195,5 +144,56 @@ This imports the whole PySimpleGUI package, with some added functionality:
         Exception during adding new theme unhashable type: 'dict'
         ```
         This behaviour can be disabled with `sg.raise_errors(False)`.
+
+-   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
+
+        auto_size_buttons() to get/set DEFAULT_AUTOSIZE_BUTTONS
+        auto_size_text() to get/set DEFAULT_AUTOSIZE_TEXT
+        autoclose_time() to get/set DEFAULT_AUTOCLOSE_TIME
+        background_color() to get/set DEFAULT_BACKGROUND_COLOR
+        border_width() to get/set DEFAULT_BORDER_WIDTH
+        button_color() to get/set DEFAULT_BUTTON_COLOR
+        button_element_size() to get/set DEFAULT_BUTTON_ELEMENT_SIZE
+        debug_win_size() to get/set DEFAULT_DEBUG_WINDOW_SIZE
+        element_background_color() to get/set DEFAULT_ELEMENT_BACKGROUND_COLOR
+        element_padding() to get/set DEFAULT_ELEMENT_PADDING
+        element_size() to get/set DEFAULT_ELEMENT_SIZE
+        element_text_color() to get/set DEFAULT_ELEMENT_TEXT_COLOR
+        enable_treeview_869_patch() to get/set ENABLE_TREEVIEW_869_PATCH
+        error_button_color() to get/set DEFAULT_ERROR_BUTTON_COLOR
+        font() to get/set DEFAULT_FONT
+        input_elements_background_color() to get/set DEFAULT_INPUT_ELEMENTS_COLOR
+        input_text_color() to get/set DEFAULT_INPUT_TEXT_COLOR
+        margins() to get/set DEFAULT_MARGINS
+        message_box_line_width() to get/set MESSAGE_BOX_LINE_WIDTH
+        progress_meter_border_depth() to get/set DEFAULT_PROGRESS_BAR_BORDER_WIDTH
+        progress_meter_color() to get/set DEFAULT_PROGRESS_BAR_COLOR
+        progress_meter_relief() to get/set DEFAULT_PROGRESS_BAR_RELIEF
+        progress_meter_size() to get/set DEFAULT_PROGRESS_BAR_SIZE
+        scrollbar_color() to get/set DEFAULT_SCROLLBAR_COLOR
+        slider_border_width() to get/set DEFAULT_SLIDER_BORDER_WIDTH
+        slider_orientation() to get/set DEFAULT_SLIDER_ORIENTATION
+        slider_relief() to get/set DEFAULT_SLIDER_RELIEF
+        suppress_error_popups() to get/set SUPPRESS_ERROR_POPUPS
+        suppress_key_guessing() to get/set SUPPRESS_KEY_GUESSING
+        suppress_raise_key_errors() to get/set SUPPRESS_RAISE_KEY_ERRORS
+        text_color() to get/set DEFAULT_TEXT_COLOR
+        text_element_background_color() to get/set DEFAULT_TEXT_ELEMENT_BACKGROUND_COLOR
+        text_justification() to get/set DEFAULT_TEXT_JUSTIFICATION
+        tooltip_font() to get/set TOOLTIP_FONT
+        tooltip_time() to get/set DEFAULT_TOOLTIP_TIME
+        ttk_theme() to get/set DEFAULT_TTK_THEME
+        use_ttk_buttons() to get/set USE_TTK_BUTTONS
+        window_location() to get/set DEFAULT_WINDOW_LOCATION
+
+    This can be very handy when a global variable has to be set during a certain operation and reset to
+    its original value afterwards, like
+    
+        org_suppress_key_guessing = suppress_key_guessing()
+        suppress_key_guessing(True)
+        window.find_element("Result").update(123)
+        suppress_key_guessing(org_suppress_key_guessing)
         
+    to make the find_element use key guessing, although I have no idea why someone would like that.
+
 -   MySimpleGUI has its own standard startup popup, with just the option to save generated code.
