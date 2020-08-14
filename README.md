@@ -116,11 +116,11 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   A Multiline element can now be used as a file.
     That means, a user program can use the write function, but more importantly, can also use the print builtin, like
-    print("This is a test", file=window.mymultiline)
+    `print("This is a test", file=window.mymultiline)`
     Multiline elements can be closed and flushed as ordinary files.
     That also opens the door to more Pythonic redirections of stdout and stderr.
 
--   More interesting is the support of ANSI colours, both for foreground and background colours.
+-   And Multiline files support of ANSI colours, both for foreground and background colours.
     The escape sequences associated with the various colours can be used as such but also via the ansi dict like
     data structure. Available colors/commands are
     
@@ -154,7 +154,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
         print(f"colour {ansi.red} red {ansi.onred}{ansi.white} red on white {ansi.reset}", file=window.results)
         print(f"still red on white {ansi.reset}{ansi.green} green", file=window.result)
 
--   ANSI colours are also supported in the initial contents of Multiline and PopupScrolled.
+-   ANSI colours are also supported as the initial contents of Multiline and PopupScrolled.
 
 -   The following patches make that a MySimpleGUI is less likely to have issues that
     are just presented to the user (even often without the line in the code where it was generated):
