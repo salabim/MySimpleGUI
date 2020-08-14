@@ -1,5 +1,5 @@
 # MySimpleGUI
-The  module MySimpleGUI is an add on for PySimpleGUI
+The  module MySimpleGUI is an addon for PySimpleGUI
 
 It's not a fork but an addon that adds functionality and changes some functionality of PySimpleGUI.
 This means that -in principle- future versions of PySimpleGUI will be supported.
@@ -14,11 +14,11 @@ implement these for various reasons. The most obvious way is then to fork the pa
 it. The disadvantage of this approach is that future versions of PySimpleGUI are not automatically
 supported by MySimpleGUI.
 Therefore, I choose another way: patching the original PySimpleGUI code at runtime. This is not a 100%
-guarantee that future PySimpleGUI version will work, but the way it's done is pretty stable.
+guarantee that future PySimpleGUI versions will work with MySimpleGUI, but the way it's done is pretty stable.
 
 **Usage**
 
-import MySimpleGUI as sg`
+`import MySimpleGUI as sg`
 
 **Functionality**
 
@@ -111,7 +111,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
     ```    
 
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
-    So no more crazy random themes with a printed out warning, that can be easily missed, and not traced to
+    So no more random themes with a printed out warning, that can be easily missed, and not traced to
     where it was called from.
 
 -   A Multiline element can now be used as a file.
@@ -122,7 +122,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   And Multiline files support of ANSI colours, both for foreground and background colours.
     The escape sequences associated with the various colours can be used as such but also via the ansi dict like
-    data structure. Available colors/commands are
+    data structure. Available colours/commands are
     
     ```
     ansi["reset"]      or ansi.reset     or "\x1b[0m"
@@ -182,7 +182,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ```
         PySimpleGUI will print a message
         `Exception during adding new theme unhashable type: 'dict` without any indication
-        what kind of exception, where this error occured and will just continue, so you might even miss it easily.
+        what kind of exception, where this error occurred and will just continue, so you might even miss it easily.
         
         On the other hand, MySimpleGUI will raise an exception and generate the following useful information about the why and where:
         ```
