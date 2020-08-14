@@ -157,14 +157,12 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   ANSI colours are also supported in the initial contents of Multiline and PopupScrolled.
 
--   MySimpleGUI has its own standard startup popup, with just the option to save generated code.
-
 -   The following patches make that a MySimpleGUI is less likely to have issues that
     are just presented to the user (even often without the line in the code where it was generated):
 
     *   PopupErrors generated within PySimpleGUI will now suppress the popup and raise a RuntimeError
         with the information that would normally be shown in the popup.
-        Setting `suppress_error_popups=True` in SetOptions will now be (silently) ignored.
+        This behaviour can be disabled with `raise_errors(False)`
 
     *   MySimpleGUI tries to capture all exceptions where output is generated. If so, 
         the exception is actually raised along with the information that would normally be printed.
@@ -185,9 +183,9 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ```
         PySimpleGUI will print a message
         `Exception during adding new theme unhashable type: 'dict` without any indication
-        what kiund of exception, where this error occured and will just continue, so you might even miss it easily.
+        what kind of exception, where this error occured and will just continue, so you might even miss it easily.
         
-        On the other hand, MySimpleGUI will raise and exception and generate the following useful informatio about the why and where:
+        On the other hand, MySimpleGUI will raise an exception and generate the following useful information about the why and where:
         ```
         Traceback (most recent call last):
         File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\misc\EuroPython\adder pysimplegui.py", line 26, in <module>
@@ -198,3 +196,4 @@ This imports the whole PySimpleGUI package, with some added functionality:
         ```
         This behaviour can be disabled with `sg.raise_errors(False)`.
         
+-   MySimpleGUI has its own standard startup popup, with just the option to save generated code.
