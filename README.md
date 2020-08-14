@@ -168,7 +168,6 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
     *   MySimpleGUI tries to capture all exceptions where output is generated. If so, 
         the exception is actually raised along with the information that would normally be printed.
-        This behaviour can be disabled with `sg.raise_errors(False)`.
         
         For example if you have this code:
         ```
@@ -184,10 +183,11 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
         sg.theme_add_new(DarkGrey8, DarkGrey8)
         ```
-        PySimpleGUI will print a message `Exception during adding new theme unhashable type: 'dict' without any indication
+        PySimpleGUI will print a message
+        `Exception during adding new theme unhashable type: 'dict` without any indication
         where this error occured and just continues, so you might even miss it easily.
         
-        On the other and, MySimpleGUI will raise and exception and generate the following useful informatio about the why and where:
+        On the other hand, MySimpleGUI will raise and exception and generate the following useful informatio about the why and where:
         ```
         Traceback (most recent call last):
         File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\misc\EuroPython\adder pysimplegui.py", line 26, in <module>
@@ -196,4 +196,5 @@ This imports the whole PySimpleGUI package, with some added functionality:
         TypeError: unhashable type: 'dict'
         Exception during adding new theme unhashable type: 'dict'
         ```
+        This behaviour can be disabled with `sg.raise_errors(False)`.
         
