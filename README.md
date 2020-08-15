@@ -246,4 +246,4 @@ This imports the whole PySimpleGUI package, with some added functionality:
         
     to make the find_element use key guessing, although I have no idea why someone would like that.
 
--   MySimpleGUI has its own standard startup popup, with just the option to save generated code.
+-   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched`.
