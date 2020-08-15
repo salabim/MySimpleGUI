@@ -326,9 +326,14 @@ for line in lines:
         buffered_lines = []
         while line_to_indent(lines.peek()) > indent:
             buffered_lines.append(next(lines))
-        if any((line+" dummy").split()[0] in ("pass", "return", "break") for line in buffered_lines):  # bodies with pass, return and break will not be affected
-            code.extend(buffered_lines)
-        else:
+        requires_raise = False
+        for line in buffered_lines:
+            if line.strip().startswith("pass") or line.strip().startswith("return") or line.strip().startswith("break"):
+                requires_raise = False
+                break
+            if line.strip().startswith("print("):
+                requires_raise = True
+        if requires_raise:
             code.append(indentstr + "    if RAISE_ERRORS:")
             code.append(indentstr + "        save_stdout = sys.stdout")
             code.append(indentstr + "        sys.stdout = io.StringIO()")
@@ -338,6 +343,8 @@ for line in lines:
             code.append(indentstr + "        sys.stdout = save_stdout")
             code.append(indentstr + "        if captured:")
             code.append(indentstr + "            raise type(e)(str(e) + '\\n' + captured) from None")
+        else:
+            code.extend(buffered_lines)
 
     elif "SUPPRESS_ERROR_POPUPS = False" in line:  # set global RAISE_ERRORS
         code.append(line)
