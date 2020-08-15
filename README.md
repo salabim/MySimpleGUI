@@ -6,7 +6,7 @@ This means that -in principle- future versions of PySimpleGUI will be supported.
 
 Requirements: installed PySimpleGUI >= 4.27.4, Python >= 3.3
 
-**Why MySimpleGui?**
+**Why MySimpleGUI**
 
 I am a big fan of PySimpleGUI, but don't like all of its functionality and think that there are
 some enhancements possible. I tried to convince the PySimpleGUI developer, but he doesn't want to
