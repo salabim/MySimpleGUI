@@ -6,7 +6,7 @@ See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
 import sys
 from pathlib import Path
 
-mysimplegui_version = "1.1.0"
+version = __version__ = "1.1.0"
 
 
 class peekable:
@@ -44,6 +44,18 @@ def line_to_indent(line):
             return indent
     return float("inf")
 
+class CodeList(list):
+    def add(self, spec, indent=0):
+        if isinstance(spec, str):
+            lines = spec.splitlines()
+        else:
+            lines = spec
+        if indent == 0:                 
+            self.extend(lines)
+        else:
+            indentstr= " " * indent
+            for line in lines:
+                self.append(indentstr + line)
 
 name = "PySimpleGUI"
 for path in sys.path:
@@ -60,52 +72,72 @@ else:
 with open(source, "r", encoding="utf-8") as f:
     lines = peekable(f.read().splitlines())
 
-code = []
+code = CodeList()
 while lines.peek().startswith("#!"):
-    code.append(next(lines))
+    code.add(next(lines))
 
-code.append("")
-code.append("# This is PySimpleGUI.py patched by MySimpleGUI version " + mysimplegui_version)
-code.append("# Patches (c)2020  Ruud van der Ham, salabim.org")
-code.append("")
+code.add("""\
+
+# This is {name}.py patched by MySimpleGUI version {version}
+# Patches (c)2020  Ruud van der Ham, salabim.org
+
+""".format(version = version, name=name))
 
 for line in lines:
-    if line == "    def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):":  # adds attributes to Read
-        code.extend(
-            splitlines(
-                """
-    @staticmethod
-    def lookup(d, key):
-        try:
-            return d[key]
-        except KeyError:
-            pass
-        if isinstance(key, str):
-            for prefix in ("key", "k"):
-                if key.startswith(prefix):
-                    try:
-                        return d[int(key[len(prefix) :])]
-                    except (ValueError, KeyError):
-                        pass
-            matches = []
-            for name in d.keys():
-                if isinstance(name, str):
-                    norm_name = name
-                    norm_name = norm_name.replace(WRITE_ONLY_KEY, "")
-                    norm_name = norm_name.replace(TIMEOUT_KEY, "")
-                    if not name or name[0].isdigit() or keyword.iskeyword(name):
-                        norm_name = "_" + norm_name
-                    norm_name = "".join(ch if ("A"[:i] + ch).isidentifier() else "_" for i, ch in enumerate(norm_name))
-                    if norm_name == key:
-                        matches.append(name)
-            if len(matches) == 1:
-                return d[matches[0]]
-            if len(matches) > 1:
-                raise KeyError("multiple matches for key " + repr(key) + " : " + repr(matches))
-        raise KeyError(key)
+    if "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
+        indent = line_to_indent(line)
+        code.add("""\
+@staticmethod
+def lookup(d, key):
+    try:
+        return d[key]
+    except KeyError:
+        pass
+    if isinstance(key, str):
+        for prefix in ("key", "k"):
+            if key.startswith(prefix):
+                try:
+                    return d[int(key[len(prefix) :])]
+                except (ValueError, KeyError):
+                    pass
+        matches = []
+        for name in d.keys():
+            if isinstance(name, str):
+                norm_name = name
+                norm_name = norm_name.replace(WRITE_ONLY_KEY, "")
+                norm_name = norm_name.replace(TIMEOUT_KEY, "")
+                if not name or name[0].isdigit() or keyword.iskeyword(name):
+                    norm_name = "_" + norm_name
+                norm_name = "".join(ch if ("A"[:i] + ch).isidentifier() else "_" for i, ch in enumerate(norm_name))
+                if norm_name == key:
+                    matches.append(name)
+        if len(matches) == 1:
+            return d[matches[0]]
+        if len(matches) > 1:
+            raise KeyError("multiple matches for key " + repr(key) + " : " + repr(matches))
+    raise KeyError(key)
 
+def __getitem__(self, key):
+    return Window.lookup(self.AllKeysDict, key)
+
+def __getattr__(self, key):
+    try:
+        return self[key]
+    except KeyError as e:
+        raise AttributeError(e) from None""", indent = indent)
+            
+        
+
+        code.add(line)
+        while not lines.peek().strip().startswith("results = "):
+            code.add(next(lines))
+        line = next(lines)
+        code.add(line)
+        indent = line_to_indent(line)
+        code.add("""\
+class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
-        return Window.lookup(self.AllKeysDict, key)
+        return Window.lookup(self.data, key)
 
     def __getattr__(self, key):
         try:
@@ -113,195 +145,161 @@ for line in lines:
         except KeyError as e:
             raise AttributeError(e) from None
 
-"""
-            )
-        )
-
-        code.append(line)
-        while not lines.peek().strip().startswith("results = "):
-            code.append(next(lines))
-        code.append(next(lines))
-
-        code.extend(
-            splitlines(
-                """
-        class AttributeDict(collections.UserDict):
-            def __getitem__(self, key):
-                return Window.lookup(self.data, key)
-
-            def __getattr__(self, key):
-                try:
-                    return self[key]
-                except KeyError as e:
-                    raise AttributeError(e) from None
-
-        events, values = results
-        if values is not None:
-            if isinstance(values, list):
-                values = {i: v for i, v in enumerate(values)}
-            values = AttributeDict(values)
-        results = events, values
-        """
-            )
-        )
+events, values = results
+if values is not None:
+    if isinstance(values, list):
+        values = {i: v for i, v in enumerate(values)}
+    values = AttributeDict(values)
+results = events, values
+""", indent=indent)
 
     elif line == "class Multiline(Element):":
-        code.append(line)
+        code.add(line)
         while not lines.peek().strip().startswith("self."):
-            code.append(next(lines))
-        code.extend(
-            splitlines(
-                """
-        self._closed = False
-        self.write_fg = None
-        self.write_bg = None
-        """
-            )
-        )
+            code.add(next(lines))
+        indent = line_to_indent(lines.peek())
+        code.add("""\
+self._closed = False
+self.write_fg = None
+self.write_bg = None""", indent=indent)
 
-    elif line == "    def write(self, txt):":
+    elif "def write(self, txt):" in line:
+
         indent = line_to_indent(line)
         while line_to_indent(lines.peek()) > indent:  # remove original write method
             next(lines)
 
-        code.extend(
-            splitlines(
-                """
-    class AttributeDict(collections.UserDict):
-        def __getitem__(self, key):
-            return self.data[key]
+        code.add("""\
+class AttributeDict(collections.UserDict):
+    def __getitem__(self, key):
+        return self.data[key]
 
-        def __getattr__(self, key):
-            try:
-                return self[key]
-            except KeyError as e:
-                raise AttributeError(e) from None
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError as e:
+            raise AttributeError(e) from None
 
-    global ansi
-    codes = (
-        ("reset", "\x1b[0m", "default", "ondefault"),
-        ("black", "\x1b[30m", "black", None),
-        ("red", "\x1b[31m", "red", None),
-        ("green", "\x1b[32m", "green", None),
-        ("yellow", "\x1b[33m", "yellow", None),
-        ("blue", "\x1b[34m", "blue", None),
-        ("magenta", "\x1b[35m", "magenta", None),
-        ("cyan", "\x1b[36m", "cyan", None),
-        ("white", "\x1b[37m", "white", None),
-        ("default", "\x1b[39m", "default", None),
-        ("onblack", "\x1b[40m", None, "black"),
-        ("onred", "\x1b[41m", None, "red"),
-        ("ongreen", "\x1b[42m", None, "green"),
-        ("onyellow", "\x1b[43m", None, "yellow"),
-        ("onblue", "\x1b[44m", None, "blue"),
-        ("onmagenta", "\x1b[45m", None, "magenta"),
-        ("oncyan", "\x1b[46m", None, "cyan"),
-        ("onwhite", "\x1b[47m", None, "white"),
-        ("ondefault", "\x1b[49m", None, "ondefault"),
-    )
-    code_fg = {}
-    code_bg = {}
+global ansi
+codes = (
+    ("reset", "\x1b[0m", "default", "ondefault"),
+    ("black", "\x1b[30m", "black", None),
+    ("red", "\x1b[31m", "red", None),
+    ("green", "\x1b[32m", "green", None),
+    ("yellow", "\x1b[33m", "yellow", None),
+    ("blue", "\x1b[34m", "blue", None),
+    ("magenta", "\x1b[35m", "magenta", None),
+    ("cyan", "\x1b[36m", "cyan", None),
+    ("white", "\x1b[37m", "white", None),
+    ("default", "\x1b[39m", "default", None),
+    ("onblack", "\x1b[40m", None, "black"),
+    ("onred", "\x1b[41m", None, "red"),
+    ("ongreen", "\x1b[42m", None, "green"),
+    ("onyellow", "\x1b[43m", None, "yellow"),
+    ("onblue", "\x1b[44m", None, "blue"),
+    ("onmagenta", "\x1b[45m", None, "magenta"),
+    ("oncyan", "\x1b[46m", None, "cyan"),
+    ("onwhite", "\x1b[47m", None, "white"),
+    ("ondefault", "\x1b[49m", None, "ondefault"),
+)
+code_fg = {}
+code_bg = {}
 
-    ansi = AttributeDict()
+ansi = AttributeDict()
 
-    for name, code, fg, bg in codes:
-        code_fg[code] = fg
-        code_bg[code] = bg
-        ansi[name] = code
+for name, code, fg, bg in codes:
+    code_fg[code] = fg
+    code_bg[code] = bg
+    ansi[name] = code
 
-    def write(self, s):
-        self._check_closed()
-        while s:
-            for i, c in enumerate(s):
-                if c == "\x1b":
-                    for code in Multiline.code_bg:
-                        if s[i:].startswith(code):
-                            break
+def write(self, s):
+    self._check_closed()
+    while s:
+        for i, c in enumerate(s):
+            if c == "\x1b":
+                for code in Multiline.code_bg:
+                    if s[i:].startswith(code):
+                        break
+                else:
+                    continue
+                _print_to_element(
+                    self, s[:i], sep="", end="", text_color=self.write_fg, background_color=self.write_bg
+                )
+                s = s[i + len(code) :]
+                if Multiline.code_fg[code] is not None:
+                    if Multiline.code_fg[code] == "default":
+                        self.write_fg = None
                     else:
-                        continue
-                    _print_to_element(
-                        self, s[:i], sep="", end="", text_color=self.write_fg, background_color=self.write_bg
-                    )
-                    s = s[i + len(code) :]
-                    if Multiline.code_fg[code] is not None:
-                        if Multiline.code_fg[code] == "default":
-                            self.write_fg = None
-                        else:
-                            self.write_fg = Multiline.code_fg[code]
-                    if Multiline.code_bg[code] is not None:
-                        if Multiline.code_bg[code] == "ondefault":
-                            self.write_bg = None
-                        else:
-                            self.write_bg = Multiline.code_bg[code]
-                    break
-            else:
-                _print_to_element(self, s, sep="", end="", text_color=self.write_fg, background_color=self.write_bg)
-                s = ""
+                        self.write_fg = Multiline.code_fg[code]
+                if Multiline.code_bg[code] is not None:
+                    if Multiline.code_bg[code] == "ondefault":
+                        self.write_bg = None
+                    else:
+                        self.write_bg = Multiline.code_bg[code]
+                break
+        else:
+            _print_to_element(self, s, sep="", end="", text_color=self.write_fg, background_color=self.write_bg)
+            s = ""
 
-    def flush(self):
-        self._check_closed()
+def flush(self):
+    self._check_closed()
 
-    def close(self):
-        self._closed = True
+def close(self):
+    self._closed = True
 
-    def _check_closed(self):
-        if self._closed:
-            raise ValueError("I/O operation on closed file")
+def _check_closed(self):
+    if self._closed:
+        raise ValueError("I/O operation on closed file")
 
-    def writable(self):
-        return not self._closed
+def writable(self):
+    return not self._closed""", indent = indent)
 
-"""
-            )
-        )
     elif "element.TKText.insert(1.0, element.DefaultText)" in line:
-        code.append(
+        code.add(
             line.replace("element.TKText.insert(1.0, element.DefaultText)", "print(element.DefaultText, file=element)")
         )
 
     elif line.startswith("def SetOptions("):  # generates extra function to get/set globals
         names = {}
-        code.append(line)
+        code.add(line)
         while line_to_indent(lines.peek()) > 0:
             line = next(lines)
-            code.append(line)
+            code.add(line)
             left, *right = line.split(" = ")
             if "#" not in line and "." not in line and line.startswith("        ") and right:
                 names[left.strip()] = right[0]
         names["RAISE_ERRORS"] = "raise_errors"
         for name in sorted(names, key=lambda x: names[x]):
             alias = names[name]
-            code.append("def {alias}(value):".format(alias=alias))
-            code.append("    global {name}".format(name=name))
-            code.append("    if value is not None:")
-            code.append("        {name} = value".format(name=name))
-            code.append("    return {name}".format(name=name))
+            code.add("""\
+def {alias}(value):
+    global {name}
+    if value is not None:
+        {name} = value
+    return {name}""".format(name=name, alias=alias))
 
     elif line.startswith("def PopupError("):  # changes PopupError behaviour to raise exception
-        code.append(line)
+        indent = line_to_indent(line)
 
+        code.add(line)
         while ":" not in lines.peek():  # read till final :
-            code.append(next(lines))
-        code.append(next(lines))
-
-        code.extend(
-            splitlines(
-                """
-    trace_details = traceback.format_stack()
-    if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAISE_ERRORS:
-        raise RuntimeError("\\n".join(args))
-    """
-            )
-        )
+            code.add(next(lines))
+        code.add(next(lines))
+        
+        code.add("""
+trace_details = traceback.format_stack()
+if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAISE_ERRORS:
+    raise RuntimeError("\\n".join(args))""", indent=indent+4)
 
     elif line == "import sys":  # add some required modules
-        code.append(line)
-        code.append("import keyword")
-        code.append("import collections")
-        code.append("import io")
+        code.add("""\
+import keyword
+import collections
+import io
+import sys""")
 
     elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
-        code.append(line)
+        code.add(line)
         exec(line)
         this_pysimplegui_version = version.split()[0]
         minimal_pysimplegui_version = "4.27.4"
@@ -310,7 +308,7 @@ for line in lines:
 
         if this_pysimplegui_version_tuple < minimal_pysimplegui_version_tuple:
             raise NotImplementedError(
-                "MySimpleGUI requires PySimpleGUI >= "
+                "MySimpleGUI requires " + name + " >= "
                 + minimal_pysimplegui_version
                 + ", not "
                 + this_pysimplegui_version
@@ -321,8 +319,7 @@ for line in lines:
 
     elif line.strip() in ("except:", "except Exception as e:"):  # exception handler insertion
         indent = line_to_indent(line)
-        indentstr = " " * indent
-        code.append(indentstr + "except Exception as e:")
+        code.add("except Exception as e:", indent=indent)
         buffered_lines = []
         while line_to_indent(lines.peek()) > indent:
             buffered_lines.append(next(lines))
@@ -334,28 +331,30 @@ for line in lines:
             if line.strip().startswith("print("):
                 requires_raise = True
         if requires_raise:
-            code.append(indentstr + "    if RAISE_ERRORS:")
-            code.append(indentstr + "        save_stdout = sys.stdout")
-            code.append(indentstr + "        sys.stdout = io.StringIO()")
-            code.extend(buffered_lines)
-            code.append(indentstr + "    if RAISE_ERRORS:")
-            code.append(indentstr + "        captured = sys.stdout.getvalue()")
-            code.append(indentstr + "        sys.stdout = save_stdout")
-            code.append(indentstr + "        if captured:")
-            code.append(indentstr + "            raise type(e)(str(e) + '\\n' + captured) from None")
+            code.add("""\
+if RAISE_ERRORS:
+    save_stdout = sys.stdout
+    sys.stdout = io.StringIO()""", indent=indent+4)
+            code.add(buffered_lines)
+
+            code.add("""\
+
+if RAISE_ERRORS:
+    captured = sys.stdout.getvalue()
+    sys.stdout = save_stdout
+    if captured:
+        raise type(e)(str(e) + '\\n' + captured) from None""", indent=indent+4)
         else:
-            code.extend(buffered_lines)
+            code.add(buffered_lines)
 
     elif "SUPPRESS_ERROR_POPUPS = False" in line:  # set global RAISE_ERRORS
-        code.append(line)
+        code.add(line)
         indent = line_to_indent(line)
-        indentstr = indent * " "
-        code.append(indentstr + "RAISE_ERRORS = True")
+        code.add("RAISE_ERRORS = True", indent=indent)
 
     elif "ix = random.randint(0, len(lf_values) - 1)" in line:  # no more random theme selection, but exception
         indent = line_to_indent(line)
-        indentstr = indent * " "
-        code.append((indentstr + "raise ValueError(index + ' not a valid theme')"))
+        code.add("raise ValueError(index + ' not a valid theme')", indent=indent)
         while line_to_indent(lines.peek()) >= indent:
             next(lines)
 
@@ -363,7 +362,7 @@ for line in lines:
         break
 
     else:
-        code.append(line)
+        code.add(line)
 
 
 del lines
@@ -371,10 +370,16 @@ del splitlines
 del line_to_indent
 del peekable
 
+
+if False:
+    filename = name + "_patched.py"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(code))
+        
 exec("\n".join(code))
 
 if __name__ == "__main__":
-    filename = "PySimpleGUI_patched.py"
+    filename = name + "_patched.py"
     if PopupYesNo("Would you like to save the patched version to " + filename) == "Yes":
         with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(code))
