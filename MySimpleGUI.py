@@ -44,18 +44,20 @@ def line_to_indent(line):
             return indent
     return float("inf")
 
+
 class CodeList(list):
     def add(self, spec, indent=0):
         if isinstance(spec, str):
             lines = spec.splitlines()
         else:
             lines = spec
-        if indent == 0:                 
+        if indent == 0:
             self.extend(lines)
         else:
-            indentstr= " " * indent
+            indentstr = " " * indent
             for line in lines:
                 self.append(indentstr + line)
+
 
 name = "PySimpleGUI"
 for path in sys.path:
@@ -76,17 +78,22 @@ code = CodeList()
 while lines.peek().startswith("#!"):
     code.add(next(lines))
 
-code.add("""\
+code.add(
+    """\
 
 # This is {name}.py patched by MySimpleGUI version {version}
 # Patches (c)2020  Ruud van der Ham, salabim.org
 
-""".format(version = version, name=name))
+""".format(
+        version=version, name=name
+    )
+)
 
 for line in lines:
     if "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
         indent = line_to_indent(line)
-        code.add("""\
+        code.add(
+            """\
 @staticmethod
 def lookup(d, key):
     try:
@@ -124,9 +131,9 @@ def __getattr__(self, key):
     try:
         return self[key]
     except KeyError as e:
-        raise AttributeError(e) from None""", indent = indent)
-            
-        
+        raise AttributeError(e) from None""",
+            indent=indent,
+        )
 
         code.add(line)
         while not lines.peek().strip().startswith("results = "):
@@ -134,7 +141,8 @@ def __getattr__(self, key):
         line = next(lines)
         code.add(line)
         indent = line_to_indent(line)
-        code.add("""\
+        code.add(
+            """\
 class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
         return Window.lookup(self.data, key)
@@ -151,17 +159,22 @@ if values is not None:
         values = {i: v for i, v in enumerate(values)}
     values = AttributeDict(values)
 results = events, values
-""", indent=indent)
+""",
+            indent=indent,
+        )
 
     elif line == "class Multiline(Element):":
         code.add(line)
         while not lines.peek().strip().startswith("self."):
             code.add(next(lines))
         indent = line_to_indent(lines.peek())
-        code.add("""\
+        code.add(
+            """\
 self._closed = False
 self.write_fg = None
-self.write_bg = None""", indent=indent)
+self.write_bg = None""",
+            indent=indent,
+        )
 
     elif "def write(self, txt):" in line:
 
@@ -169,7 +182,8 @@ self.write_bg = None""", indent=indent)
         while line_to_indent(lines.peek()) > indent:  # remove original write method
             next(lines)
 
-        code.add("""\
+        code.add(
+            """\
 class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
         return self.data[key]
@@ -252,7 +266,9 @@ def _check_closed(self):
         raise ValueError("I/O operation on closed file")
 
 def writable(self):
-    return not self._closed""", indent = indent)
+    return not self._closed""",
+            indent=indent,
+        )
 
     elif "element.TKText.insert(1.0, element.DefaultText)" in line:
         code.add(
@@ -271,12 +287,16 @@ def writable(self):
         names["RAISE_ERRORS"] = "raise_errors"
         for name in sorted(names, key=lambda x: names[x]):
             alias = names[name]
-            code.add("""\
+            code.add(
+                """\
 def {alias}(value):
     global {name}
     if value is not None:
         {name} = value
-    return {name}""".format(name=name, alias=alias))
+    return {name}""".format(
+                    name=name, alias=alias
+                )
+            )
 
     elif line.startswith("def PopupError("):  # changes PopupError behaviour to raise exception
         indent = line_to_indent(line)
@@ -285,18 +305,23 @@ def {alias}(value):
         while ":" not in lines.peek():  # read till final :
             code.add(next(lines))
         code.add(next(lines))
-        
-        code.add("""
+
+        code.add(
+            """
 trace_details = traceback.format_stack()
 if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAISE_ERRORS:
-    raise RuntimeError("\\n".join(args))""", indent=indent+4)
+    raise RuntimeError("\\n".join(args))""",
+            indent=indent + 4,
+        )
 
     elif line == "import sys":  # add some required modules
-        code.add("""\
+        code.add(
+            """\
 import keyword
 import collections
 import io
-import sys""")
+import sys"""
+        )
 
     elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
         code.add(line)
@@ -308,7 +333,9 @@ import sys""")
 
         if this_pysimplegui_version_tuple < minimal_pysimplegui_version_tuple:
             raise NotImplementedError(
-                "MySimpleGUI requires " + name + " >= "
+                "MySimpleGUI requires "
+                + name
+                + " >= "
                 + minimal_pysimplegui_version
                 + ", not "
                 + this_pysimplegui_version
@@ -331,19 +358,25 @@ import sys""")
             if line.strip().startswith("print("):
                 requires_raise = True
         if requires_raise:
-            code.add("""\
+            code.add(
+                """\
 if RAISE_ERRORS:
     save_stdout = sys.stdout
-    sys.stdout = io.StringIO()""", indent=indent+4)
+    sys.stdout = io.StringIO()""",
+                indent=indent + 4,
+            )
             code.add(buffered_lines)
 
-            code.add("""\
+            code.add(
+                """\
 
 if RAISE_ERRORS:
     captured = sys.stdout.getvalue()
     sys.stdout = save_stdout
     if captured:
-        raise type(e)(str(e) + '\\n' + captured) from None""", indent=indent+4)
+        raise type(e)(str(e) + '\\n' + captured) from None""",
+                indent=indent + 4,
+            )
         else:
             code.add(buffered_lines)
 
@@ -371,11 +404,6 @@ del line_to_indent
 del peekable
 
 
-if False:
-    filename = name + "_patched.py"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write("\n".join(code))
-        
 exec("\n".join(code))
 
 if __name__ == "__main__":
