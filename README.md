@@ -194,6 +194,9 @@ This imports the whole PySimpleGUI package, with some added functionality:
         Exception during adding new theme unhashable type: 'dict'
         ```
         This behaviour can be disabled with `sg.raise_errors(False)`.
+        
+-   All `warnings.warn` messages are either suppressed (if followed by a PopupError), or will raise a Runtime exception with the
+    original message.
 
 -   Functions are provided to get/set the globals that can be normally only be defined with SetOptions:
 
