@@ -59,16 +59,16 @@ class CodeList(list):
                 self.append(indentstr + line)
 
 
-name = "PySimpleGUI"
+pysimplegui_name = "PySimpleGUI"
 for path in sys.path:
-    source = Path(path) / (name + ".py")
+    source = Path(path) / (pysimplegui_name + ".py")
     if source.is_file():
         break
-    source = Path(path) / name / (name + ".py")
+    source = Path(path) / pysimplegui_name / (pysimplegui_name + ".py")
     if source.is_file():
         break
 else:
-    raise ImportError(name + ".py" + " not found")
+    raise ImportError(pysimplegui_name + ".py" + " not found")
 
 
 with open(source, "r", encoding="utf-8") as f:
@@ -81,11 +81,11 @@ while lines.peek().startswith("#!"):
 code.add(
     """\
 
-# This is {name}.py patched by MySimpleGUI version {version}
+# This is {pysimplegui_name}.py patched by MySimpleGUI version {version}
 # Patches (c)2020  Ruud van der Ham, salabim.org
 
 """.format(
-        version=version, name=name
+        version=version, pysimplegui_name=pysimplegui_name
     )
 )
 
@@ -320,7 +320,12 @@ if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAIS
 import keyword
 import collections
 import io
-import sys"""
+import sys
+
+class warnings:
+    def warn(message, *args):
+        print(message)"""
+
         )
 
     elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
@@ -334,7 +339,7 @@ import sys"""
         if this_pysimplegui_version_tuple < minimal_pysimplegui_version_tuple:
             raise NotImplementedError(
                 "MySimpleGUI requires "
-                + name
+                + pysimplegui_name
                 + " >= "
                 + minimal_pysimplegui_version
                 + ", not "
@@ -349,7 +354,10 @@ import sys"""
         code.add("except Exception as e:", indent=indent)
         buffered_lines = []
         while line_to_indent(lines.peek()) > indent:
-            buffered_lines.append(next(lines))
+            line = next(lines)
+            if line.strip().startswith("warnings.warn"):
+                line = line.replace("warnings.warn", "print")
+            buffered_lines.append(line)
         requires_raise = False
         for line in buffered_lines:
             if line.strip().startswith("pass") or line.strip().startswith("return") or line.strip().startswith("break"):
@@ -391,6 +399,15 @@ if RAISE_ERRORS:
         while line_to_indent(lines.peek()) >= indent:
             next(lines)
 
+    elif line.strip().startswith("warnings.warn("):
+        if "popup" in lines.peek().lower() and "error" in lines.peek().lower():
+            code.add("# " + line + "# warnings.warn")
+        else:
+            line = line.replace("warnings.warn", "raise RuntimeError")
+            line = line.replace(", UserWarning", "")
+            code.add(line)
+            
+
     elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
         break
 
@@ -403,11 +420,12 @@ del splitlines
 del line_to_indent
 del peekable
 
+print(pysimplegui_name)
 
 exec("\n".join(code))
 
 if __name__ == "__main__":
-    filename = name + "_patched.py"
+    filename = pysimplegui_name + "_patched.py"
     if PopupYesNo("Would you like to save the patched version to " + filename) == "Yes":
         with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(code))

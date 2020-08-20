@@ -1,5 +1,9 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.1  2020-08-20
+--------------------
+All warnings.warn messages are now either suppressed (if followed by a PopupError) or 
+will raise a RuntimeError Exception with the original message.
 
 vs 1.1.0  2020-08-13
 --------------------
