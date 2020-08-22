@@ -1,5 +1,9 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.2  2020-08-22
+--------------------
+The text 'PySimpleGUI' was printed incorrectly. Fixed.
+
 vs 1.1.1  2020-08-20
 --------------------
 All warnings.warn messages are now either suppressed (if followed by a PopupError) or 

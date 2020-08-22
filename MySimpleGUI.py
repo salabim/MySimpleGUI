@@ -6,7 +6,7 @@ See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
 import sys
 from pathlib import Path
 
-version = __version__ = "1.1.0"
+version = __version__ = "1.1.2"
 
 
 class peekable:
@@ -320,12 +320,7 @@ if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAIS
 import keyword
 import collections
 import io
-import sys
-
-class warnings:
-    def warn(message, *args):
-        print(message)"""
-
+import sys"""
         )
 
     elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
@@ -406,7 +401,6 @@ if RAISE_ERRORS:
             line = line.replace("warnings.warn", "raise RuntimeError")
             line = line.replace(", UserWarning", "")
             code.add(line)
-            
 
     elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
         break
@@ -419,8 +413,6 @@ del lines
 del splitlines
 del line_to_indent
 del peekable
-
-print(pysimplegui_name)
 
 exec("\n".join(code))
 
