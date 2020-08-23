@@ -6,7 +6,7 @@ See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
 import sys
 from pathlib import Path
 
-version = __version__ = "1.1.2"
+version = __version__ = "1.1.3"
 
 
 class peekable:
@@ -162,6 +162,33 @@ results = events, values
 """,
             indent=indent,
         )
+
+    elif line.strip().startswith("if element.Type == ELEM_TYPE_INPUT_TEXT:"):
+        code.add(line)
+        if lines.peek().strip().startswith("try:"):
+            while True:
+                line = next(lines)
+                if line.strip().startswith("elif"):
+                    break
+                code.add(line)
+            indent = line_to_indent(line)    
+            code.add("""\
+elif element.Type == ELEM_TYPE_TEXT:
+    value = element.TKStringVar.get()""", indent=indent) 
+            code.add(line)
+
+    elif "ELEM_TYPE_SEPARATOR):" in line:
+        code.add(line.replace("ELEM_TYPE_SEPARATOR", "ELEM_TYPE_SEPARATOR, ELEM_TYPE_TEXT"))
+
+    elif "element.Type != ELEM_TYPE_TEXT and \\" in line:
+        pass # remove this condition
+
+    elif "if element.Key in key_dict.keys():" in line:
+        code.add(line)
+        indent = line_to_indent(line)
+        code.add("raise KeyError('duplicate key found in layout: ' + repr(element.Key))", indent = indent+4)
+        while line_to_indent(lines.peek()) > indent:  # remove original code
+            next(lines)
 
     elif line == "class Multiline(Element):":
         code.add(line)
@@ -413,6 +440,11 @@ del lines
 del splitlines
 del line_to_indent
 del peekable
+
+if True:
+    filename = pysimplegui_name + "_patched.py"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(code))
 
 exec("\n".join(code))
 

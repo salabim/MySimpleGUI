@@ -1,5 +1,13 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.3  2020-08-22
+--------------------
+window.read() now returns also the contents of Text elements in values. Note that this might affect
+the numbering of elements that don't have a key.
+
+When a duplicate key is found in the layout, a KeyError will be raised, instead of printing
+a warning and substituting the key.
+
 vs 1.1.2  2020-08-22
 --------------------
 The text 'PySimpleGUI' was printed incorrectly. Fixed.
