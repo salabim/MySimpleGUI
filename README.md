@@ -110,6 +110,10 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
     window.close()   
     ```    
+-   In contrast to PySimpleGUI, window.read() wil also return the value of Text elements in values.
+
+-   When a duplicate key is found in a layout, a KeyError will be raised instead of a printing a line and
+    substituting the key.
 
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
     So no more random themes with a printed out warning, that can be easily missed, and not traced to
