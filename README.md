@@ -286,7 +286,7 @@ This imports the whole PySimpleGUI package, with some added functionality:
 
 -   Perfomance:
     Loading MySimpleGUI takes a bit longer than loading PySimpleGUI (with full traceback adding some extra time).
-    I most cases, this won't cause a problem.
+    In most cases, this won't cause a problem.
     At runtime there will be no difference in perfomance.
     If load time performance is an issue, it is also possible to use
     ```
