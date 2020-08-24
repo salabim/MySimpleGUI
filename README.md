@@ -17,6 +17,13 @@ supported by MySimpleGUI.
 Therefore, I choose another way: patching the original PySimpleGUI code at runtime. This is not a 100%
 guarantee that future PySimpleGUI versions will work with MySimpleGUI, but the way it's done is pretty stable.
 
+**Installation**
+You can either install MySimpleGUI by downloading the file MySimpleGUI.py from 
+https://github.com/salabim/MySimpleGUI/
+or from PyPI with
+```
+pip install MySimpleGUI
+```
 **Usage**
 
 `import MySimpleGUI as sg`
