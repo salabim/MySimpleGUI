@@ -247,11 +247,11 @@ This imports the whole PySimpleGUI package, with some added functionality:
     This can be very handy when a global variable has to be set during a certain operation and reset to
     its original value afterwards, like
     
-        save_message_box_line_width = message_box_line_width()
-        message_box_line_width(100)
-        while PopupYesNo("Does MySimpleGUI suppprt ansi characters?") != "Yes":
-            pass
-        message_box_line_width(save_message_box_line_width)
+        save_message_box_line_width = sg.message_box_line_width()
+        sg.message_box_line_width(120)
+        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterward")
+        sg.message_box_line_width(save_message_box_line_width)
+        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterward")
         
     to make the PopUp box width temporarily bigger and restore it to the original afterwards.
     
