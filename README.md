@@ -247,13 +247,14 @@ This imports the whole PySimpleGUI package, with some added functionality:
     This can be very handy when a global variable has to be set during a certain operation and reset to
     its original value afterwards, like
     
-        org_suppress_key_guessing = suppress_key_guessing()
-        suppress_key_guessing(True)
-        window.find_element("Result").update(123)
-        suppress_key_guessing(org_suppress_key_guessing)
+        save_message_box_line_width = message_box_line_width()
+        message_box_line_width(100)
+        while PopupYesNo("Does MySimpleGUI suppprt ansi characters?") != "Yes":
+            pass
+        message_box_line_width(save_message_box_line_width)
         
-    to make the find_element use key guessing, although I have no idea why someone would like that.
-
+    to make the PopUp box width temporarily bigger and restore it to the original afterwards.
+    
 -   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
     ```
     Traceback (most recent call last):
