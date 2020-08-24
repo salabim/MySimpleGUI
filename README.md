@@ -254,4 +254,44 @@ This imports the whole PySimpleGUI package, with some added functionality:
         
     to make the find_element use key guessing, although I have no idea why someone would like that.
 
+-   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
+    ```
+    Traceback (most recent call last):
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
+        window.Number14.update("Hallo")
+      File "<string>", line 7115, in __getattr__
+    AttributeError: 'Number14'
+    ```
+    But it is possible to get full traceback when an exception is raised, like:
+    ```
+    Traceback (most recent call last):
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
+        window.Number14.update("Hallo")
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\PySimpleGUI_patched.py", line 7115, in __getattr__
+        raise AttributeError(e) from None
+    AttributeError: 'Number14'
+    ```
+    This is done by saving a file PySimpleGUI_patched. This way of importing MySimpleGUI is slightly slower.
+    To enable full traceback, the environment variable MySimpleGUI_full_traceback has to be set to a value
+    other than the null string.
+    The easiest way to do that is by putting
+    ```
+    import os
+        os.environ["MySimpleGUI_full_traceback"] = "1"
+    ```
+    before
+    ```
+    import MySimpleGUI as sg 
+    ```
+
+-   Perfomance:
+    Loading MySimpleGUI takes a bit longer than loading PySimpleGUI (with full traceback adding some extra time).
+    I most cases, this won't cause a problem.
+    At runtime there will be no difference in perfomance.
+    If load time performance is an issue, it is also possible to use
+    ```
+    import PySimpleGUI_patched as sg
+    ```
+    , but then the patches have to be applied for newer versions of PySimpleGUI.
+    
 -   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched`.
