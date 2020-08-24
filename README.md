@@ -8,7 +8,7 @@ Requirements: installed PySimpleGUI >= 4.27.4, Python >= 3.3
 
 **Why MySimpleGUI**
 
-I am a big fan of PySimpleGUI, but don't like all of its functionality and think that there are
+I am a fan of PySimpleGUI, but don't like all of its functionality and think that there are
 some enhancements possible.
 
 The most obvious way is then to fork the package and modify
@@ -32,7 +32,7 @@ pip install MySimpleGUI
 
 **Functionality**
 
-This imports the whole PySimpleGUI package, with some added functionality:
+MySimpleGUI offers the whole PySimpleGUI functionality, with some added features and changes:
 
 -   Attribute notation to Window and the values parameter as returned from `Window.read()`.
 
@@ -302,6 +302,6 @@ This imports the whole PySimpleGUI package, with some added functionality:
     ```
     import PySimpleGUI_patched as sg
     ```
-    , but then the patches have to be applied for newer versions of PySimpleGUI.
+    , but then the patches have to be applied whenever a new versions of PySimpleGUI is installed.
     
 -   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched.py`.
