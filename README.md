@@ -249,9 +249,9 @@ This imports the whole PySimpleGUI package, with some added functionality:
     
         save_message_box_line_width = sg.message_box_line_width()
         sg.message_box_line_width(120)
-        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterward")
+        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterwards)
         sg.message_box_line_width(save_message_box_line_width)
-        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterward")
+        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterwards")
         
     to make the PopUp box width temporarily bigger and restore it to the original afterwards.
     
