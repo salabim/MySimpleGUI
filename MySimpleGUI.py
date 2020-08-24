@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 import os
 
-version = __version__ = "1.1.3"
+version = __version__ = "1.1.4"
 
 
 class peekable:
