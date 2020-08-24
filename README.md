@@ -18,8 +18,10 @@ Therefore, I choose another way: patching the original PySimpleGUI code at runti
 guarantee that future PySimpleGUI versions will work with MySimpleGUI, but the way it's done is pretty stable.
 
 **Installation**
+
 You can either install MySimpleGUI by downloading the file MySimpleGUI.py from 
-https://github.com/salabim/MySimpleGUI/
+    https://github.com/salabim/MySimpleGUI/
+
 or from PyPI with
 ```
 pip install MySimpleGUI
@@ -302,4 +304,4 @@ This imports the whole PySimpleGUI package, with some added functionality:
     ```
     , but then the patches have to be applied for newer versions of PySimpleGUI.
     
--   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched`.
+-   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched.py`.
