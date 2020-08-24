@@ -1,11 +1,38 @@
 Changelog MySimpleGUI
 =====================
-vs 1.1.3  2020-08-22
+vs 1.1.4  2020-08-24
+--------------------
+Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
+    Traceback (most recent call last):
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
+        window.Number14.update("Hallo")
+      File "<string>", line 7115, in __getattr__
+    AttributeError: 'Number14'
+With this version it is possible to get full traceback when an exception is raised, like:
+    Traceback (most recent call last):
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
+        window.Number14.update("Hallo")
+      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\PySimpleGUI_patched.py", line 7115, in __getattr__
+        raise AttributeError(e) from None
+    AttributeError: 'Number14'
+
+This is done by saving a file PySimpleGUI_patched. This way of importing MySimpleGUI is slightly slower.
+To enable full traceback, the environment variable MySimpleGUI_full_traceback has to be set to a value
+other than the null string.
+The easiest way to do that is by
+    import os
+    os.environ["MySimpleGUI_full_traceback"] = "1"
+before
+    import MySimpleGUI as sg 
+
+Some minor bug fixes.
+
+vs 1.1.3  2020-08-23
 --------------------
 window.read() now returns also the contents of Text elements in values. Note that this might affect
 the numbering of elements that don't have a key.
 
-When a duplicate key is found in the layout, a KeyError will be raised, instead of printing
+When a duplicate key is found in a layout, a KeyError will be raised, instead of printing
 a warning and substituting the key.
 
 vs 1.1.2  2020-08-22

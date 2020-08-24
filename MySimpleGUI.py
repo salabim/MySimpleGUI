@@ -5,6 +5,7 @@ See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
 """
 import sys
 from pathlib import Path
+import os
 
 version = __version__ = "1.1.3"
 
@@ -60,6 +61,9 @@ class CodeList(list):
 
 
 pysimplegui_name = "PySimpleGUI"
+write_filename = pysimplegui_name + "_patched.py"
+write_filename = str(Path(write_filename).resolve())
+
 for path in sys.path:
     source = Path(path) / (pysimplegui_name + ".py")
     if source.is_file():
@@ -124,9 +128,6 @@ def lookup(d, key):
             raise KeyError("multiple matches for key " + repr(key) + " : " + repr(matches))
     raise KeyError(key)
 
-def __getitem__(self, key):
-    return Window.lookup(self.AllKeysDict, key)
-
 def __getattr__(self, key):
     try:
         return self[key]
@@ -163,6 +164,9 @@ results = events, values
             indent=indent,
         )
 
+    elif line.strip().startswith("return self.FindElement(key)"):  # this the original Window.__getitem__ contents:
+        code.add(line.replace("return self.FindElement(key)", "return Window.lookup(self.AllKeysDict, key)"))
+
     elif line.strip().startswith("if element.Type == ELEM_TYPE_INPUT_TEXT:"):
         code.add(line)
         if lines.peek().strip().startswith("try:"):
@@ -171,22 +175,25 @@ results = events, values
                 if line.strip().startswith("elif"):
                     break
                 code.add(line)
-            indent = line_to_indent(line)    
-            code.add("""\
+            indent = line_to_indent(line)
+            code.add(
+                """\
 elif element.Type == ELEM_TYPE_TEXT:
-    value = element.TKStringVar.get()""", indent=indent) 
+    value = element.TKStringVar.get()""",
+                indent=indent,
+            )
             code.add(line)
 
     elif "ELEM_TYPE_SEPARATOR):" in line:
         code.add(line.replace("ELEM_TYPE_SEPARATOR", "ELEM_TYPE_SEPARATOR, ELEM_TYPE_TEXT"))
 
     elif "element.Type != ELEM_TYPE_TEXT and \\" in line:
-        pass # remove this condition
+        pass  # remove this condition
 
     elif "if element.Key in key_dict.keys():" in line:
         code.add(line)
         indent = line_to_indent(line)
-        code.add("raise KeyError('duplicate key found in layout: ' + repr(element.Key))", indent = indent+4)
+        code.add("raise KeyError('duplicate key found in layout: ' + repr(element.Key))", indent=indent + 4)
         while line_to_indent(lines.peek()) > indent:  # remove original code
             next(lines)
 
@@ -316,7 +323,7 @@ def writable(self):
             alias = names[name]
             code.add(
                 """\
-def {alias}(value):
+def {alias}(value = None):
     global {name}
     if value is not None:
         {name} = value
@@ -423,7 +430,7 @@ if RAISE_ERRORS:
 
     elif line.strip().startswith("warnings.warn("):
         if "popup" in lines.peek().lower() and "error" in lines.peek().lower():
-            code.add("# " + line + "# warnings.warn")
+            pass  # remove line
         else:
             line = line.replace("warnings.warn", "raise RuntimeError")
             line = line.replace(", UserWarning", "")
@@ -435,22 +442,33 @@ if RAISE_ERRORS:
     else:
         code.add(line)
 
+for var in list(vars().keys()):
+    if not var.startswith("__") and var not in ("code", "write_filename", "os"):
+        del vars()[var]
 
-del lines
-del splitlines
-del line_to_indent
-del peekable
 
-if True:
-    filename = pysimplegui_name + "_patched.py"
-    with open(filename, "w", encoding="utf-8") as f:
+def write_file():
+    with open(write_filename, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
-exec("\n".join(code))
+
+if "MySimpleGUI_full_traceback" in os.environ and os.environ["MySimpleGUI_full_traceback"] != "":
+    write_file()
+    from PySimpleGUI_patched import *
+else:
+    exec("\n".join(code))
 
 if __name__ == "__main__":
-    filename = pysimplegui_name + "_patched.py"
-    if PopupYesNo("Would you like to save the patched version to " + filename) == "Yes":
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write("\n".join(code))
-        Popup("saved to " + str(Path(filename).resolve()), title="saved")
+    save_message_box_line_width = message_box_line_width()
+    message_box_line_width(max(save_message_box_line_width, len(write_filename)))
+    if PopupYesNo("Would you like to save the patched version to\n" + write_filename) == "Yes":
+        write_file()
+        Popup("Patched version saved to\n" + write_filename, title="saved")
+    message_box_line_width(save_message_box_line_width)
+    del save_message_box_line_width
+
+
+del var
+del code
+del write_file
+del write_filename
