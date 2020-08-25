@@ -252,17 +252,21 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
         ttk_theme() to get/set DEFAULT_TTK_THEME
         use_ttk_buttons() to get/set USE_TTK_BUTTONS
         window_location() to get/set DEFAULT_WINDOW_LOCATION
-
-    This can be very handy when a global variable has to be set during a certain operation and reset to
-    its original value afterwards, like
-    
-        save_message_box_line_width = sg.message_box_line_width()
-        sg.message_box_line_width(120)
-        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterwards)
-        sg.message_box_line_width(save_message_box_line_width)
-        sg.Popup("With MySimpleGUI it is easy to widen the width of a Popup box and restore it afterwards")
         
-    to make the PopUp box width temporarily bigger and restore it to the original afterwards.
+The value of a global variable can be retrieved by calling the function without an argument, like
+
+    current_message_box_line_with = sg.message_box_line_width()
+    
+The value of a global variable can be set by calling the function with the new value as its argument, like
+
+    sg.message_box_line_width(20)
+
+And it is possible to use the function with an argument as a context manager. In that case, the global variable
+will be restored after finishing the context manager:
+
+    with sg.message_box_line_width(20):
+        sg.Popup("Hey, this is much more narrow than usual!")
+    sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
     
 -   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
     ```
