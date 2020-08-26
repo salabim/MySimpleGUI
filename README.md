@@ -267,7 +267,18 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
         with sg.message_box_line_width(20):
             sg.Popup("Hey, this is much more narrow than usual!")
         sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
+        
+    Some details:
     
+    -   A function with a parameter like `sg.message_box_line_width(100)` returns a TemporaryChange object.
+    -   When a value is set, the new value can also be retrived by calling the function, like `sg.message_box_line_width(100)()`
+    -   The `as` parameter in the context manager will be set to the saved value, like
+    
+            with sg.message_box_line_width(20) as saved_message_box_line_width:
+                print(saved_message_box_line_width)
+                sg.Popup("Hey, this is much more narrow than usual!")
+            sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
+            
 -   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
     ```
     Traceback (most recent call last):
