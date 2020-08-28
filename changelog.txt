@@ -1,6 +1,6 @@
 Changelog MySimpleGUI
 =====================
-vs 1.1.5  2020-08-25
+vs 1.1.5  2020-08-28
 --------------------
 The functions to get/set global variables, like sg.message_box_line_width() and sg.button_color() now
 provide context manager functionality to temporarily set a global variable, e.g.
@@ -13,8 +13,10 @@ Without a parameter, a function still returns the current value:
 And you can still set a global variable with
     sg.message_box_line_width(100)
     
-Please note that a function with a parameter like sg.message_box_line_width(100) now returns a TemporaryChange object
-instead of the current value.
+Implementation detail: A function with a parameter like sg.message_box_line_width(100) now returns a
+TemporaryChange object instead of the current value.
+
+Some minor bug fixes.
 
 
 vs 1.1.4  2020-08-24

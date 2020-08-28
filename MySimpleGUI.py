@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 import os
 
-version = __version__ = "1.1.4"
+version = __version__ = "1.1.5"
 
 
 class peekable:
@@ -49,7 +49,10 @@ def line_to_indent(line):
 class CodeList(list):
     def add(self, spec, indent=0):
         if isinstance(spec, str):
-            lines = spec.splitlines()
+            if spec == "":
+                lines = [""]
+            else:
+                lines = spec.splitlines()
         else:
             lines = spec
         if indent == 0:
@@ -94,6 +97,8 @@ code.add(
 )
 
 for line in lines:
+    if line == "":
+        pass
     if "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
         indent = line_to_indent(line)
         code.add(
@@ -105,7 +110,7 @@ def lookup(d, key):
     except KeyError:
         pass
     if isinstance(key, str):
-        for prefix in ("key", "k"):
+        for prefix in ("key", "k", "_"):
             if key.startswith(prefix):
                 try:
                     return d[int(key[len(prefix) :])]
@@ -137,10 +142,9 @@ def __getattr__(self, key):
         )
 
         code.add(line)
-        while not lines.peek().strip().startswith("results = "):
+        while not lines.peek().strip().startswith("return results"):
             code.add(next(lines))
         line = next(lines)
-        code.add(line)
         indent = line_to_indent(line)
         code.add(
             """\
@@ -163,6 +167,7 @@ results = events, values
 """,
             indent=indent,
         )
+        code.add(line)  # the original return result line
 
     elif line.strip().startswith("return self.FindElement(key)"):  # this the original Window.__getitem__ contents:
         code.add(line.replace("return self.FindElement(key)", "return Window.lookup(self.AllKeysDict, key)"))
@@ -212,11 +217,18 @@ self.write_bg = None""",
 
     elif "def write(self, txt):" in line:
 
-        indent = line_to_indent(line)
-        while line_to_indent(lines.peek()) > indent:  # remove original write method
-            next(lines)
+        indent = line_to_indent(line) 
+        buffered_lines = [line]
+        while line_to_indent(lines.peek()) > indent:
+            line = next(lines)
+            buffered_lines.append(line)
+        if any('self.output.' in line for line in buffered_lines):
+            code.add(buffered_lines)
+        else: 
+            while line_to_indent(lines.peek()) > indent:  # remove original write method, only for Multiline
+                next(lines)
 
-        code.add(
+            code.add(
             """\
 class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
@@ -318,6 +330,22 @@ def writable(self):
             left, *right = line.split(" = ")
             if "#" not in line and "." not in line and line.startswith("        ") and right:
                 names[left.strip()] = right[0]
+        code.add(
+            """\
+class _TemporaryChange:
+    def __init__(self, value, global_name, globals):
+        self.globals=globals
+        self.save_value = self.globals[global_name]
+        self.global_name=global_name
+        self.globals[global_name] = value
+    def __enter__(self):
+        return self.save_value
+    def __exit__(self, *args):
+        self.globals[self.global_name] = self.save_value
+    def __call__(self):
+        return self.globals[self.global_name]"""
+        )
+
         names["RAISE_ERRORS"] = "raise_errors"
         for name in sorted(names, key=lambda x: names[x]):
             alias = names[name]
@@ -325,9 +353,9 @@ def writable(self):
                 """\
 def {alias}(value = None):
     global {name}
-    if value is not None:
-        {name} = value
-    return {name}""".format(
+    if value is None:
+        return {name}
+    return _TemporaryChange(value, '{name}', globals())""".format(
                     name=name, alias=alias
                 )
             )
@@ -459,13 +487,10 @@ else:
     exec("\n".join(code))
 
 if __name__ == "__main__":
-    save_message_box_line_width = message_box_line_width()
-    message_box_line_width(max(save_message_box_line_width, len(write_filename)))
-    if PopupYesNo("Would you like to save the patched version to\n" + write_filename) == "Yes":
-        write_file()
-        Popup("Patched version saved to\n" + write_filename, title="saved")
-    message_box_line_width(save_message_box_line_width)
-    del save_message_box_line_width
+    with message_box_line_width(len(write_filename)):
+        if PopupYesNo("Would you like to save the patched version to\n" + write_filename) == "Yes":
+            write_file()
+            Popup("Patched version saved to\n" + write_filename, title="saved")
 
 
 del var
