@@ -1,5 +1,22 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.5  2020-08-25
+--------------------
+The functions to get/set global variables, like sg.message_box_line_width() and sg.button_color() now
+provide context manager functionality to temporarily set a global variable, e.g.
+    with sg.message_box_line_width(20):
+        sg.Popup("Hey, this is much more narrow than usual!")
+    sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
+
+Without a parameter, a function still returns the current value:
+    print(sg.message_box_line_width())
+And you can still set a global variable with
+    sg.message_box_line_width(100)
+    
+Please note that a function with a parameter like sg.message_box_line_width(100) now returns a TemporaryChange object
+instead of the current value.
+
+
 vs 1.1.4  2020-08-24
 --------------------
 Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
@@ -19,7 +36,7 @@ With this version it is possible to get full traceback when an exception is rais
 This is done by saving a file PySimpleGUI_patched. This way of importing MySimpleGUI is slightly slower.
 To enable full traceback, the environment variable MySimpleGUI_full_traceback has to be set to a value
 other than the null string.
-The easiest way to do that is by
+The easiest way to do that is by putting
     import os
     os.environ["MySimpleGUI_full_traceback"] = "1"
 before
