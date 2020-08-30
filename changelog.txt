@@ -1,5 +1,30 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.6  2020-08-30
+--------------------
+MySimpleGUI now supports pretty printing of elements, colums and windows. This can be very helpful
+in debugging complex layouts.
+This is implemented via a __repr__ method of the Element and Window classes.
+Printing can be done with an ordinary print.
+
+Note that attributes that are None or (None, None) are suppressed from the output.
+
+In previous versions keys that were equal to one of the internal attributes of the Window class.
+like "Rows", "read", "AllKeysDict" were not allowed in MySimpleGUI. That limitation does not exist
+anymore.
+
+Technical detail:
+    If a key is also used as an internal attribute of Window, e.g. modal,
+        window.modal will return the element associated with "modal"
+    If the internal attribute is required in that case, so
+        window.internal.modal will return the value of the internal attribute window.
+    If an internal attribute of a window is not defined as a key of any element in that window,
+    e.g. (under the assumption that 'saw_00' is not used as a key)
+        window.saw_00 and window.internal.saw_00 will be equivalent.
+    In practice however, internal will hardly ever have to be used.    
+
+Internal change: more stable method of detecting which class we are parsing.
+
 vs 1.1.5  2020-08-28
 --------------------
 The functions to get/set global variables, like sg.message_box_line_width() and sg.button_color() now
@@ -66,7 +91,7 @@ will raise a RuntimeError Exception with the original message.
 vs 1.1.0  2020-08-13
 --------------------
 Complete change of code. Instead of importing PySimpleGUI, the complete source code is now read from
-PySimpleGUI and patched where required. This is a much more flexible approach that also allows for
+PySimpleGUI, parsed and patched where required. This is a much more flexible approach that also allows for
 future patches to be applied relatively easy.
 
 SUPPRESS_ERROR_POPUPS is now always False, even if you try and set it.

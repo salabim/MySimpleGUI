@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 import os
 
-version = __version__ = "1.1.5"
+version = __version__ = "1.1.6"
 
 
 class peekable:
@@ -96,15 +96,28 @@ code.add(
     )
 )
 
+this_class = "?"
 for line in lines:
-    if line == "":
-        pass
+    if line.startswith("class "):
+        parts = line.split()
+        if len(parts) > 1:
+            this_class = parts[1].split("(")[0].replace(":", "").strip()
+
+    if line.strip().startswith("self.config_count = 0"):
+        code.add(line)
+        indent = line_to_indent(line)
+        code.add(
+            """\
+self.internal = Window.Internal(self)""",
+            indent=indent,
+        )
+
     if "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
         indent = line_to_indent(line)
         code.add(
             """\
 @staticmethod
-def lookup(d, key):
+def _lookup(d, key):
     try:
         return d[key]
     except KeyError:
@@ -133,11 +146,54 @@ def lookup(d, key):
             raise KeyError("multiple matches for key " + repr(key) + " : " + repr(matches))
     raise KeyError(key)
 
+def type_name(self):
+    return "Window  id: " + str(id(self))
+
+def __repr__(self):
+    result = [self.type_name()]
+    if not hasattr(self, "taken"):
+        self.taken = True
+        for k in sorted(self.__dict__.keys(), key=str.upper):
+            v = self.__dict__[k]
+            if v not in (None, (None,None)):
+                if k == "ParentContainer":
+                    if hasattr(v, "type_name"):
+                        result.append("    " + k + " = " + v.type_name())
+                    else:
+                        result.append("    " + k + " = " + repr(v))
+                else:
+                    if k not in ("WindowIcon", "AllKeysDict"):
+                        if isinstance(v, list):
+                            v  = list_repr(v)
+                        l = repr(v).split("\\n")
+                        result.append("    " + k + " = " + l[0])
+                        for x in l[1:]:
+                            result.append("    " + x)
+
+        for k, v in self.AllKeysDict.items():
+            result.append("    [" + repr(k) + "] = " + v.type_name())
+        del self.taken
+    return "\\n".join(result)
+
+class Internal:
+    def __init__(self, window):
+        self._window = window
+    def __getattr__(self, v):
+        return super(Window, self._window).__getattribute__(v)
+
+def __getattribute__(self, key):
+    if key in super().__getattribute__("AllKeysDict"):
+        trace_details = traceback.format_stack()
+        if trace_details[-1].split(",")[0] != trace_details[-2].split(",")[0]: # internal or external?
+            return self[key]
+    return super().__getattribute__(key)
+
 def __getattr__(self, key):
     try:
         return self[key]
     except KeyError as e:
-        raise AttributeError(e) from None""",
+        raise AttributeError(e) from None
+""",
             indent=indent,
         )
 
@@ -150,7 +206,7 @@ def __getattr__(self, key):
             """\
 class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
-        return Window.lookup(self.data, key)
+        return Window._lookup(self.data, key)
 
     def __getattr__(self, key):
         try:
@@ -169,8 +225,70 @@ results = events, values
         )
         code.add(line)  # the original return result line
 
+    elif line.strip().startswith("def _RightClickMenuCallback(self, event):"):
+        indent = line_to_indent(line)
+        code.add(
+            """\
+def type_name(self):
+    type_name = self.Type
+    type_name = type_name.replace("option menu","OptionMenu")
+    type_name = type_name.replace("spind","Spin")
+    type_name = type_name.replace("tabgroup","TabGroup")
+    type_name = type_name.replace("menubar","Menu")
+    type_name = type_name.replace("progressbar","ProgressBar")
+    type_name = type_name.replace("statusbar","StatusBar")
+    type_name = type_name.capitalize()
+    return type_name + " id: " + str(id(self))
+
+def __repr__(self):
+    result = [self.type_name()]
+    if not hasattr(self, "taken"):
+        self.taken = True
+
+        for k in sorted(self.__dict__.keys(), key=str.upper):
+            v = self.__dict__[k]
+            if v not in (None, (None,None)):
+                if k == "ParentContainer":
+                    if hasattr(v, "type_name"):
+                        result.append("    " + k + " = " + v.type_name())
+                    else:
+                        result.append("    " + k + " = " + repr(v))
+                else:
+                    if k != "Type":
+                        if isinstance(v, list):
+                            v  = list_repr(v)
+                        l = repr(v).split("\\n")
+                        result.append("    " + k + " = " + l[0])
+                        for x in l[1:]:
+                            result.append("    " + x)
+        del self.taken
+    return "\\n".join(result)""",
+            indent=indent,
+        )
+
+        code.add(line)
+    elif line.startswith("class Element"):
+        code.add(
+            """\
+class list_repr(list):
+    def type_name(self):
+        return "list"
+
+    def __repr__(self):
+        result = [self.type_name()]
+        for v in self:
+            if isinstance(v, list):
+                v  = list_repr(v)
+
+            l = repr(v).split("\\n")
+            for x in l:
+                result.append("    " + x)
+        return "\\n".join(result)"""
+        )
+
+        code.add(line)
     elif line.strip().startswith("return self.FindElement(key)"):  # this the original Window.__getitem__ contents:
-        code.add(line.replace("return self.FindElement(key)", "return Window.lookup(self.AllKeysDict, key)"))
+        code.add(line.replace("return self.FindElement(key)", "return Window._lookup(self.AllKeysDict, key)"))
 
     elif line.strip().startswith("if element.Type == ELEM_TYPE_INPUT_TEXT:"):
         code.add(line)
@@ -198,7 +316,14 @@ elif element.Type == ELEM_TYPE_TEXT:
     elif "if element.Key in key_dict.keys():" in line:
         code.add(line)
         indent = line_to_indent(line)
-        code.add("raise KeyError('duplicate key found in layout: ' + repr(element.Key))", indent=indent + 4)
+        code.add(
+            """\
+    raise KeyError('duplicate key found in layout: ' + repr(element.Key))
+if element.Key == "AllKeysDictxx":
+    raise KeyError('key "AllKeysDict" not allowed in layout')""",
+            indent=indent,
+        )
+
         while line_to_indent(lines.peek()) > indent:  # remove original code
             next(lines)
 
@@ -215,20 +340,13 @@ self.write_bg = None""",
             indent=indent,
         )
 
-    elif "def write(self, txt):" in line:
+    elif "def write(self, txt):" in line and this_class == "Multiline":
 
-        indent = line_to_indent(line) 
-        buffered_lines = [line]
+        indent = line_to_indent(line)
         while line_to_indent(lines.peek()) > indent:
-            line = next(lines)
-            buffered_lines.append(line)
-        if any('self.output.' in line for line in buffered_lines):
-            code.add(buffered_lines)
-        else: 
-            while line_to_indent(lines.peek()) > indent:  # remove original write method, only for Multiline
-                next(lines)
+            next(lines)
 
-            code.add(
+        code.add(
             """\
 class AttributeDict(collections.UserDict):
     def __getitem__(self, key):
@@ -479,6 +597,8 @@ def write_file():
     with open(write_filename, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
+
+# write_file()
 
 if "MySimpleGUI_full_traceback" in os.environ and os.environ["MySimpleGUI_full_traceback"] != "":
     write_file()
