@@ -123,6 +123,22 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
 
 -   When a duplicate key is found in a layout, a KeyError will be raised instead of a printing a line and
     substituting the key.
+    
+-   If a key is also used as an internal attribute of Window, e.g. modal,
+
+        window.modal will return the element associated with "modal"
+        
+    If the internal attribute is required in that case, so
+    
+        window.internal.modal will return the value of the internal attribute window.
+        
+    If an internal attribute of a window is not defined as a key of any element in that window,
+    e.g. (under the assumption that 'saw_00' is not used as a key)
+    
+        window.saw_00 and window.internal.saw_00 will be equivalent.
+        
+    In practice however, internal will hardly ever have to be used.    
+
 
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
     So no more random themes with a printed out warning, that can be easily missed, and not traced to
