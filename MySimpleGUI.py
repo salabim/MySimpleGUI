@@ -8,7 +8,7 @@ from pathlib import Path
 import os
 
 version = __version__ = "1.1.6"
-
+mysimplegui_version = version
 
 class peekable:
     def __init__(self, iterable):
@@ -591,7 +591,7 @@ if RAISE_ERRORS:
         code.add(line)
 
 for var in list(vars().keys()):
-    if not var.startswith("__") and var not in ("code", "write_filename", "os"):
+    if not var.startswith("__") and var not in ("code", "write_filename", "os", "mysimplegui_version"):
         del vars()[var]
 
 
