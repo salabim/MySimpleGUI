@@ -162,7 +162,9 @@ def __repr__(self):
                     else:
                         result.append("    " + k + " = " + repr(v))
                 else:
-                    if k not in ("WindowIcon", "AllKeysDict"):
+                    if k not in ("AllKeysDict"):
+                        if k == "WindowIcon":
+                            v = v[:80] + b"..."
                         if isinstance(v, list):
                             v  = list_repr(v)
                         l = repr(v).split("\\n")
