@@ -295,7 +295,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
                 sg.Popup("Hey, this is much more narrow than usual!")
             sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
             
--   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can de very useful for debugging and just getting to
+-   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can be very useful for debugging and just getting to
 know what MySimpleGUI/PySimpleGUI does internally.
     For instance:
         
