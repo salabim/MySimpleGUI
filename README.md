@@ -295,6 +295,33 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
                 sg.Popup("Hey, this is much more narrow than usual!")
             sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
             
+-   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can de very useful for debugging and just getting to
+know what MySimpleGUI/PySimpleGUI does internally.
+    For instance:
+        
+        Input id: 2069800000984        
+            BackgroundColor = '#f0f3f7'
+            BorderWidth = 1
+            ChangeSubmits = False
+            DefaultText = ''
+            Disabled = False
+            do_not_clear = True
+            Focus = False
+            Key = 'IN'
+            pad_used = (0, 0)
+            ParentContainer = Window  id: 2069800001432
+            PasswordCharacter = ''
+            Position = (1, 0)
+            ReadOnly = False
+            taken = True
+            Tearoff = False
+            TextColor = '#000000'
+            UseReadonlyForDisable = True
+            user_bind_dict = {}
+            Visible = True
+        
+    The output will suppress all attributes that are None or (None, None) and will try and expand where possible.
+            
 -   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
     ```
     Traceback (most recent call last):
@@ -318,7 +345,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     The easiest way to do that is by putting
     ```
     import os
-        os.environ["MySimpleGUI_full_traceback"] = "1"
+    os.environ["MySimpleGUI_full_traceback"] = "1"
     ```
     before
     ```
