@@ -351,6 +351,12 @@ know what MySimpleGUI/PySimpleGUI does internally.
     ```
     import MySimpleGUI as sg 
     ```
+    
+-   Version
+
+    `sg.version` will return the inherited PySimpleGUI version
+    
+    `sg.mysimplegui_version` will return the MySimpleGUI_version
 
 -   Perfomance:
     Loading MySimpleGUI takes a bit longer than loading PySimpleGUI (with full traceback adding some extra time).
