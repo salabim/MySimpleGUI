@@ -48,6 +48,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     But there's more: if a key contains `sg.WRITE_ONLY_KEY` or `sg.TIMEOUT_KEY`, the key can be also accessed without
     these constants. So if we had defined `sg.Text("ab", key="zipcode" + sg.WRITE_ONLY_KEY)`,
     we can get the values as
+    
         values["zipcode" + sg.WRITE_ONLY_KEY]
         values["zipcode"]
         values.zipcode
@@ -59,9 +60,8 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     can also be accessed as `values.name_address_zipcode_` or (less useful) `values["name_address_zipcode"]`
 
     In the example above, I used values. But all the same functionality applies to a window lookup as well!
-    So instead of `window["result"]`, we may also write `window.result`. And instead of `window["--result--"]` we can write
-    `window.__result__`, although I don't see the point of using a key like "--result--", but the developer of
-    PySimpleGUI seems to prefer that over "result".
+    So instead of `window["result"]`, we may also write `window.result`. And instead of `window["--result--"]`
+    as prefered in PySimpleGUI  we can write `window.__result__`, although I don't see the point of using a key like "--result--".
 
     Note that the above functionality is only provided if the key is a string or a number.
 
@@ -71,7 +71,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     can still use `sg.FindElement`. But, I wouldn't recommend that ...
     
     Just one example of MySimpleGUI's attribute approach.
-    The PySimpleGUI shows this recipe:
+    The PySimpleGUI documentation shows this recipe:
     
     ```
     import PySimpleGUI as sg
