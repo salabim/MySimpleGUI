@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 import os
 
-version = __version__ = "1.1.6"
+version = __version__ = "1.1.7"
 mysimplegui_version = version
 
 class peekable:
