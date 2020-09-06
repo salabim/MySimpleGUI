@@ -156,7 +156,7 @@ def __repr__(self):
         for k in sorted(self.__dict__.keys(), key=str.upper):
             v = self.__dict__[k]
             if v not in (None, (None,None)):
-                if k == "ParentContainer":
+                if k in ("ParentContainer", "ParentForm"):
                     if hasattr(v, "type_name"):
                         result.append("    " + k + " = " + v.type_name())
                     else:
@@ -164,7 +164,7 @@ def __repr__(self):
                 else:
                     if k not in ("AllKeysDict"):
                         if k == "WindowIcon":
-                            v = v[:80] + b"..."
+                            v = str(v)[:80] + "..."
                         if isinstance(v, list):
                             v  = list_repr(v)
                         l = repr(v).split("\\n")
@@ -250,7 +250,7 @@ def __repr__(self):
         for k in sorted(self.__dict__.keys(), key=str.upper):
             v = self.__dict__[k]
             if v not in (None, (None,None)):
-                if k == "ParentContainer":
+                if k in ("ParentContainer", "ParentForm"):
                     if hasattr(v, "type_name"):
                         result.append("    " + k + " = " + v.type_name())
                     else:
@@ -291,6 +291,15 @@ class list_repr(list):
         code.add(line)
     elif line.strip().startswith("return self.FindElement(key)"):  # this the original Window.__getitem__ contents:
         code.add(line.replace("return self.FindElement(key)", "return Window._lookup(self.AllKeysDict, key)"))
+
+    elif line.strip() == "if file_name:":
+        code.add(line.replace("file_name", "True"))
+
+    elif line.strip() == "if folder_name:":
+        code.add(line.replace("folder_name", "True"))
+
+    elif "target=target" in line:
+        code.add(line.replace("target=target", "target=target or key or k or button_text"))
 
     elif line.strip().startswith("if element.Type == ELEM_TYPE_INPUT_TEXT:"):
         code.add(line)
