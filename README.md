@@ -352,6 +352,14 @@ know what MySimpleGUI/PySimpleGUI does internally.
     import MySimpleGUI as sg 
     ```
     
+-  In PySimpleGUI the target in several Button functions (like FilesBrowse and FolderBrowse) defaults to the
+(ThisRow, -1). When you want it to point to the button itself, you have to specify a target that is equal
+to key, k or button_text. In order support the DRY (don't repeat yourself) principle, MySimpleGUI now automatically
+points to 'itself' if the target parameter is the null string or None.
+
+-   Awaiting a bug fix in PySimpleGUI, MySimpleGUI now correctly returns the null string upon pressing
+<Cancel> in FileBrowse, FilesBrowse and FolderBrowse.
+    
 -   Version
 
     `sg.version` will return the inherited PySimpleGUI version
