@@ -124,22 +124,15 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
 -   When a duplicate key is found in a layout, a KeyError will be raised instead of a printing a line and
     substituting the key.
     
--   If a key is also used as an internal attribute of Window, e.g. modal,
-
-        window.modal will return the element associated with "modal"
+-   If a key is also used as an internal attribute of Window, e.g. modal, `window.modal` will return the element associated with "modal"
         
-    If the internal attribute is required in that case, so
-    
-        window.internal.modal will return the value of the internal attribute window.
+    If the internal attribute is required in that case use internal. So `window.internal.modal` will return the value of the internal attribute window.
         
     If an internal attribute of a window is not defined as a key of any element in that window,
-    e.g. (under the assumption that 'saw_00' is not used as a key)
-    
-        window.saw_00 and window.internal.saw_00 will be equivalent.
+    e.g. (under the assumption that 'saw_00' is not used as a key) `window.saw_00` and `window.internal.saw_00` will be equivalent.
         
     In practice however, internal will hardly ever have to be used.    
-
-
+    
 -   The functions ChangeLookAndFeel and theme will now generate a proper ValueError when an invalid theme is given.
     So no more random themes with a printed out warning, that can be easily missed, and not traced to
     where it was called from.
@@ -174,6 +167,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     ansi["oncyan"]     or ansi.oncyan    or "\x1b[46m"
     ansi["onwhite"]    or ansi.onwhite   or "\x1b[47m"
     ansi["ondefault"]  or ansi.ondefault or "\x1b[49m"
+    ansi["font"]       or ansi.font
     ```
 
     So, we can now do:
@@ -184,7 +178,16 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
         print(f"colour {ansi.red} red {ansi.onred}{ansi.white} red on white {ansi.reset}", file=window.results)
         print(f"still red on white {ansi.reset}{ansi.green} green", file=window.result)
 
--   ANSI colours are also supported as the initial contents of Multiline and PopupScrolled.
+-   On top of the ANSI colors, A font may also be specified with ansi.font (or ansi["font"]).
+It makes it possible to change font inline. The font should be
+specified immediately following the ansi.font code and terminated by |. E.g
+    
+        from MySimpleGUI import ansi
+        ...
+        window = [[sg.Multiline, size=(80, 10), key="results"]]
+        print(f"{ansi.font}courier 8|this is courier, 8 points{ansi.reset}this is not", file=window.results)  
+
+-   ANSI colors/font are also supported as the initial contents of Multiline and PopupScrolled.
 
 -   The following patches make that a MySimpleGUI is less likely to have issues that
     are just presented to the user (even often without the line in the code where it was generated):
