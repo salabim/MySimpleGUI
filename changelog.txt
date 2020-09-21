@@ -1,5 +1,24 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.8  2020-09-21
+--------------------
+The requirement that a key (of an element) has to be hashable does not apply anymore in MySimpleGUI.
+If you specify a non-hashable as a key, you can't access it like window[key] or values[key],
+but is still usable in a test for the value of an event.
+
+From now on Multiline.print() supports the font parameter.
+And in line with that, Multiline.update() supports the font_for_value parameter.
+
+The ansi specification has been extended with ansi.font, which should be followed by a font/size/style
+specification, ended with a |.
+So now, we can say
+    print(f"{font}courier 8 italic|this is italic courier, 8 points{ansi.reset} and this is not")
+
+The bug fix for FileBrowse, FilesBrowse and FolderBrowse as introduced in version 1.1.7 is now a bit more
+clever and guarantees the same functionality as PySimpleGUI when the target is not the same as the button
+itself.
+
+
 vs 1.1.7  2020-09-06
 --------------------
 In PySimpleGUI the target in several Button functions (like FilesBrowse and FolderBrowse) defaults to the
