@@ -167,7 +167,7 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     ansi["oncyan"]     or ansi.oncyan    or "\x1b[46m"
     ansi["onwhite"]    or ansi.onwhite   or "\x1b[47m"
     ansi["ondefault"]  or ansi.ondefault or "\x1b[49m"
-    ansi["font"]       or ansi.font
+    ansi["font"]       or ansi.font      or "x\1b[font"
     ```
 
     So, we can now do:
@@ -178,8 +178,8 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
         print(f"colour {ansi.red} red {ansi.onred}{ansi.white} red on white {ansi.reset}", file=window.results)
         print(f"still red on white {ansi.reset}{ansi.green} green", file=window.result)
 
--   On top of the ANSI colors, A font may also be specified with ansi.font (or ansi["font"]).
-It makes it possible to change font inline. The font should be
+-   On top of the ANSI colors, A font can be specified in a similar way with ansi.font (or ansi["font"]).
+It makes it possible to change fonts inline. The font should be
 specified immediately following the ansi.font code and terminated by |. E.g
     
         from MySimpleGUI import ansi
@@ -298,6 +298,13 @@ specified immediately following the ansi.font code and terminated by |. E.g
                 sg.Popup("Hey, this is much more narrow than usual!")
             sg.Popup("And now it's back to the usual 60 characters width, isn't it?")
             
+-   MySimpleGUI adds a `font` parameter to Multiline()
+
+-   MySimpleGUI add a `font_for_value` parameter to Multiline.update()
+            
+-   In contrast to PySimpleGUI, MySimpleGUI doesn't require the key parameter in element specifications to be hashable.
+Please note that to access an item/attribute of a window of values, the key has to be hashable, still.
+            
 -   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can be very useful for debugging and just getting to
 know what MySimpleGUI/PySimpleGUI does internally.
     For instance:
@@ -360,8 +367,8 @@ know what MySimpleGUI/PySimpleGUI does internally.
 to key, k or button_text. In order support the DRY (don't repeat yourself) principle, MySimpleGUI now automatically
 points to 'itself' if the target parameter is the null string or None.
 
--   Awaiting a bug fix in PySimpleGUI, MySimpleGUI now correctly returns the null string upon pressing
-<Cancel> in FileBrowse, FilesBrowse and FolderBrowse.
+-   In contrast to PySimpleGUI, MySimpleGUI correctly returns the null string upon pressing
+<Cancel> in FileBrowse, FilesBrowse and FolderBrowse, provided the target parameter points to 'itself' (see also bullet above).
     
 -   Version
 
