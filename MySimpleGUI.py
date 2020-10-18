@@ -1,15 +1,20 @@
-"""
-MySimpleGUI
+#   __  __         ____   _                    _         ____  _   _  ___
+#  |  \/  | _   _ / ___| (_) _ __ ___   _ __  | |  ___  / ___|| | | ||_ _|
+#  | |\/| || | | |\___ \ | || '_ ` _ \ | '_ \ | | / _ \| |  _ | | | | | |
+#  | |  | || |_| | ___) || || | | | | || |_) || ||  __/| |_| || |_| | | |
+#  |_|  |_| \__, ||____/ |_||_| |_| |_|| .__/ |_| \___| \____| \___/ |___|
+#           |___/                      |_|
+#
+# See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
 
-See https://github.com/salabim/MySimpleGUI/blob/master/README.md for details
-"""
 import sys
 from pathlib import Path
 import os
 import collections
 
-version = __version__ = "1.1.8"
+version = __version__ = "1.1.9"
 mysimplegui_version = version
+
 
 class peekable:
     def __init__(self, iterable):
@@ -30,9 +35,13 @@ class peekable:
         else:
             return next(self.iterator)
 
+
 registered_patches = collections.defaultdict(int)
+
+
 def register_patch(n):
     registered_patches[n] += 1
+
 
 def splitlines(s):
     return s.splitlines()
@@ -339,11 +348,10 @@ elif element.Type == ELEM_TYPE_TEXT:
 
     elif "if element.Key in key_dict.keys():" in line:
         register_patch(11)
-        code.add(line)
+        #        code.add(line)
         indent = line_to_indent(line)
         code.add(
             """\
-    raise KeyError('duplicate key found in layout: ' + repr(element.Key))
 if element.Key == "AllKeysDictxx":
     raise KeyError('key "AllKeysDict" not allowed in layout')""",
             indent=indent,
@@ -351,6 +359,37 @@ if element.Key == "AllKeysDictxx":
 
         while line_to_indent(lines.peek()) > indent:  # remove original code
             next(lines)
+
+    elif "self.AllKeysDict = self._BuildKeyDictForWindow(self, self, dict)" in line:
+        register_patch(34)
+        indent = line_to_indent(line)
+        code.add(line)
+        code.add(
+            """\
+self.AllKeysDictnewdict = {}
+for k, v in dict.items():
+    if not(isinstance(k, tuple) and len(k) == 2 and k[0] == NONE_KEY):
+        self.AllKeysDictnewdict[k] = v
+for k, v in dict.items():
+    if isinstance(k, tuple) and len(k) == 2 and k[0] == NONE_KEY:
+        for i in itertools.count(1):
+            if i not in self.AllKeysDictnewdict:
+                k = i
+                v.Key = i
+                self.AllKeysDictnewdict[k] = v
+                break""",
+            indent=indent,
+        )
+
+    elif "element.Key = top_window.DictionaryKeyCounter" in line:
+        register_patch(35)
+        indent = line_to_indent(line)
+        code.add("element.Key = (NONE_KEY, top_window.DictionaryKeyCounter)", indent=indent)
+
+    elif line.startswith("COLOR_SYSTEM_DEFAULT = "):
+        register_patch(36)
+        code.add("NONE_KEY = object()")
+        code.add(line)
 
     elif line == "class Multiline(Element):":
         register_patch(12)
@@ -483,11 +522,18 @@ def writable(self):
 
     elif "background_color_for_value=background_color" in line:
         register_patch(15)
-        code.add(line.replace("background_color_for_value=background_color", "background_color_for_value=background_color, font_for_value=font"))
+        code.add(
+            line.replace(
+                "background_color_for_value=background_color",
+                "background_color_for_value=background_color, font_for_value=font",
+            )
+        )
 
     elif "background_color_for_value=None" in line:
         register_patch(16)
-        code.add(line.replace("background_color_for_value=None", "background_color_for_value=None, font_for_value=None"))
+        code.add(
+            line.replace("background_color_for_value=None", "background_color_for_value=None, font_for_value=None")
+        )
 
     elif "if background_color_for_value is not None or text_color_for_value is not None:" in line:
         register_patch(17)
@@ -495,34 +541,60 @@ def writable(self):
 
     elif "str(background_color_for_value)+')'" in line:
         register_patch(18)
-        code.add(line.replace("str(background_color_for_value)+')'", "str(background_color_for_value)+',' + str(font_for_value)+')'"))
+        code.add(
+            line.replace(
+                "str(background_color_for_value)+')'", "str(background_color_for_value)+',' + str(font_for_value)+')'"
+            )
+        )
 
-    elif  "text_color=None, background_color=None" in line and  line.strip().startswith(("def Print", "def print", "def _print_to_element")):
+    elif "text_color=None, background_color=None" in line and line.strip().startswith(
+        ("def Print", "def print", "def _print_to_element")
+    ):
         register_patch(19)
-        code.add(line.replace("text_color=None, background_color=None", "text_color=None, background_color=None, font=None"))    
+        code.add(
+            line.replace("text_color=None, background_color=None", "text_color=None, background_color=None, font=None")
+        )
 
-    elif  "text_color=text_color, background_color=background_color" in line and line.strip().startswith("_print_to_element"):
+    elif "text_color=text_color, background_color=background_color" in line and line.strip().startswith(
+        "_print_to_element"
+    ):
         register_patch(20)
-        code.add(line.replace("text_color=text_color, background_color=background_color", "text_color=text_color, background_color=background_color, font=font"))           
+        code.add(
+            line.replace(
+                "text_color=text_color, background_color=background_color",
+                "text_color=text_color, background_color=background_color, font=font",
+            )
+        )
 
     elif "if background_color_for_value is not None:" in line:
         register_patch(21)
         indent = line_to_indent(line)
-        code.add("""\
+        code.add(
+            """\
 if font_for_value is not None:
-    self.TKText.tag_configure(tag, font=font_for_value)""", indent=indent)
+    self.TKText.tag_configure(tag, font=font_for_value)""",
+            indent=indent,
+        )
         code.add(line)
 
     elif "if element.Key is not None:" in line:
         register_patch(22)
-        code.add(line.replace("if element.Key is not None:", "if element.Key is not None and isinstance(element.Key, collections.abc.Hashable):"))
+        code.add(
+            line.replace(
+                "if element.Key is not None:",
+                "if element.Key is not None and isinstance(element.Key, collections.abc.Hashable):",
+            )
+        )
 
     elif line.strip().startswith("form.ReturnValuesDictionary[element.Key] = value"):
         register_patch(23)
         indent = line_to_indent(line)
-        code.add("""\
+        code.add(
+            """\
 if isinstance(element.Key, collections.abc.Hashable):
-    form.ReturnValuesDictionary[element.Key] = value""", indent=indent)
+    form.ReturnValuesDictionary[element.Key] = value""",
+            indent=indent,
+        )
 
     elif line.startswith("def SetOptions("):  # generates extra function to get/set globals
         register_patch(24)
@@ -652,6 +724,13 @@ if RAISE_ERRORS:
         else:
             code.add(buffered_lines)
 
+    #    elif line.strip().startswith("if key in settings.dict:"):
+    #        indent = line_to_indent(line)
+    #        while not lines.peek().strip().startswith("else:"):
+    #            code.add(next(lines).strip(), indent=indent)
+    #        while line_to_indent(next(lines)) == indent:
+    #            next(lines)
+
     elif "SUPPRESS_ERROR_POPUPS = False" in line:  # set global RAISE_ERRORS
         register_patch(29)
         code.add(line)
@@ -685,7 +764,13 @@ if RAISE_ERRORS:
 missing_patches = set(range(len(registered_patches))) - set(registered_patches)
 
 for var in list(vars().keys()):
-    if not var.startswith("__") and var not in ("code", "write_filename", "os", "mysimplegui_version", "missing_patches"):
+    if not var.startswith("__") and var not in (
+        "code",
+        "write_filename",
+        "os",
+        "mysimplegui_version",
+        "missing_patches",
+    ):
         del vars()[var]
 
 
@@ -693,7 +778,8 @@ def write_file():
     with open(write_filename, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
-write_file()
+
+# write_file()
 
 if "MySimpleGUI_full_traceback" in os.environ and os.environ["MySimpleGUI_full_traceback"] != "":
     write_file()
@@ -702,7 +788,7 @@ else:
     exec("\n".join(code))
 
 if missing_patches:
-    raise Warning("not all patches applied.\n" + "Missing: " + ", ".join(map(str,missing_patches)))
+    raise Warning("not all patches applied.\n" + "Missing: " + ", ".join(map(str, missing_patches)))
 
 if __name__ == "__main__":
 

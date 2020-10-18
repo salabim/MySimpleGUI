@@ -1,5 +1,37 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.9  2020-10-18
+--------------------
+In PySimpleGUI duplicate keys are automatically replaced by another key, In MySimpleGUI however
+a key can be used several times, in other words duplicates are allowed.
+When looking up an element with with window[key] or values[key] or the equivalent window.key or values.key,
+the last defined element will be returned.
+The new functionality can be demonstrated in the demo theme color program where PySimpleGUI needs a unique
+key, defined as a tuple:
+                row.append(sg.T(sg.SYMBOL_SQUARE, text_color=color, background_color='black', pad=(0,0),
+                    font='DEFAUlT 20', right_click_menu=['Nothing',[color]], tooltip=color,
+                    enable_events=True, key=(i, color)])
+In MySimpleGUI this can be
+                row.append(sg.T(sg.SYMBOL_SQUARE, text_color=color, background_color='black', pad=(0,0),
+                    font='DEFAUlT 20', right_click_menu=['Nothing',[color]], tooltip=color,
+                    enable_events=True, key=color])
+And then
+        if isinstance(event, tuple):       # someone clicked a swatch
+            chosen_color = event[1]
+        else:
+            if event[0] == '#':  # someone right clicked
+                chosen_color = event
+            else:
+                chosen_color = ''
+can be changed into
+        if event[0] == '#':
+            chosen_color = event
+        else:
+            chosen_color = ''
+            
+This version also makes the key assignment of elements without a key/k argument more reliable, i.e.
+defined keys are never reassigned as can be the case with PySimpleGUI.
+
 vs 1.1.8  2020-09-21
 --------------------
 The requirement that a key (of an element) has to be hashable does not apply anymore in MySimpleGUI.
@@ -18,7 +50,6 @@ The bug fix for FileBrowse, FilesBrowse and FolderBrowse as introduced in versio
 clever and guarantees the same functionality as PySimpleGUI when the target is not the same as the button
 itself.
 
-
 vs 1.1.7  2020-09-06
 --------------------
 In PySimpleGUI the target in several Button functions (like FilesBrowse and FolderBrowse) defaults to the
@@ -26,8 +57,8 @@ In PySimpleGUI the target in several Button functions (like FilesBrowse and Fold
 to key, k or button_text. In order support the DRY (don't repeat yourself) principle, MySimpleGUI now automatically
 points to 'itself' if the target parameter is the null string or None.
 
-Awaiting a bug fix in PySimpleGUI, MySimpleGUI now correctly returns the null string upon pressing
-<Cancel> in FileBrowse, FilesBrowse and FolderBrowse.
+In contrast to PySimpleGUI, MySimpleGUI returns the null string upon pressing <Cancel> in
+FileBrowse, FilesBrowse and FolderBrowse.
 
 vs 1.1.6  2020-08-30
 --------------------
