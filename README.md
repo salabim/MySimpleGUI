@@ -121,9 +121,12 @@ MySimpleGUI offers the whole PySimpleGUI functionality, with some added features
     ```    
 -   In contrast to PySimpleGUI, window.read() wil also return the value of Text elements in values.
 
--   When a duplicate key is found in a layout, a KeyError will be raised instead of a printing a line and
-    substituting the key.
-    
+-   In contrast to PySimpleGUI, duplicate keys for elements are allowed. The element returned when using window[key] or values[key] will
+be the last defined.
+
+-   In MySimpleGUI, defined keys are never overridden, by elements that are defined without a given key/k (these are numbered 1, 2, ..., but will skip
+any already defined key.
+
 -   If a key is also used as an internal attribute of Window, e.g. modal, `window.modal` will return the element associated with "modal"
         
     If the internal attribute is required in that case use internal. So `window.internal.modal` will return the value of the internal attribute window.
