@@ -316,9 +316,10 @@ Also, when PIL is installed, other extensions than .png or .gif, e.g. .jpg can b
     Image.DrawImage and Image.Update support PIL Images as well as other extension than just
 .png or .gif if PIL is installed.
 
-Note that there's still no requirement to have PIL installled. But is highly recommended, though.
+    Note that there's still no requirement to have PIL installled. But is highly recommended, though.
+    
 -   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can be very useful for debugging and just getting to
-know what MySimpleGUI/PySimpleGUI does internally.
+know what My  SimpleGUI/PySimpleGUI does internally.
     For instance:
         
         Input id: 2069800000984        
