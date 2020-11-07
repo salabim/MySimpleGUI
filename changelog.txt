@@ -1,5 +1,15 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.10  2020-11-06
+---------------------
+MySimpleGUI now also allows PIL images to be used in Image elements.
+Also, when PIL is installed, other extensions than .png or .gif, e.g. .jpg can be used in Image elements.
+
+Image.DrawImage and Image.Update now support PIL Images as well as other extension than just
+.png or .gif if PIL is installed.
+
+Note that there's still no requirement to have PIL installled. But is highly recommended, though.
+
 vs 1.1.9  2020-10-18
 --------------------
 In PySimpleGUI duplicate keys are automatically replaced by another key, In MySimpleGUI however

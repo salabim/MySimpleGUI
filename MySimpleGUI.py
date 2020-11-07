@@ -12,7 +12,7 @@ from pathlib import Path
 import os
 import collections
 
-version = __version__ = "1.1.9"
+version = __version__ = "1.1.10"
 mysimplegui_version = version
 
 
@@ -653,14 +653,14 @@ if (trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]) and RAIS
             indent=indent + 4,
         )
 
-    elif line == "import sys":  # add some required modules
+    elif line == "import queue":  # add some required modules
         register_patch(26)
+        code.add(line)
         code.add(
             """\
 import keyword
 import collections
-import io
-import sys"""
+import io"""
         )
 
     elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
@@ -753,12 +753,76 @@ if RAISE_ERRORS:
             line = line.replace(", UserWarning", "")
             code.add(line)
 
-    elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
+    elif "photo = tk.PhotoImage(file=element.Filename)" in line:
         register_patch(32)
+        indent = line_to_indent(line)
+        code.add(
+            """\
+try:
+    import PIL
+    from PIL import ImageTk
+    from PIL import Image as PILImage
+except ModuleNotFoundError:
+    PIL = None
+if isinstance(element.Filename, (str, Path)):
+    if Path(element.Filename).is_file():
+        if PIL:
+            img = PILImage.open(element.Filename)
+            photo = ImageTk.PhotoImage(img)
+        else:
+            if Path(element.Filename).suffix.lower() in (".gif", ".png"):
+                photo = tk.PhotoImage(file=element.Filename)
+            else:
+                raise ValueError("file format not supported. Try installing PIL")
+    else:
+        raise FileNotFoundError(element.Filename)
+else:
+    if PIL:
+        photo = ImageTk.PhotoImage(element.Filename)
+    else:
+        raise ValueError("PIL image format not supported. Try installing PIL")
+""",
+            indent=indent,
+        )
+
+    elif "image = tk.PhotoImage(file=filename)" in line:
+        register_patch(33)
+        indent = line_to_indent(line)
+        code.add(
+            """\
+try:
+    import PIL
+    from PIL import ImageTk
+    from PIL import Image as PILImage
+except ModuleNotFoundError:
+    PIL = None
+if isinstance(filename, (str, Path)):
+    if Path(filename).is_file():
+        if PIL:
+            img = PILImage.open(filename)
+            image = ImageTk.PhotoImage(img)
+        else:
+            if Path(filename).suffix.lower() in (".gif", ".png"):
+                image = tk.PhotoImage(file=filename)
+            else:
+                raise ValueError("file format not supported. Try installing PIL")
+    else:
+        raise FileNotFoundError(filename)
+else:
+    if PIL:
+        image = ImageTk.PhotoImage(filename)
+    else:
+        raise ValueError("PIL image format not supported. Try installing PIL")
+
+""",
+            indent=indent,
+        )
+    elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
+        register_patch(34)
         break
 
     else:
-        register_patch(33)
+        register_patch(34)
         code.add(line)
 
 missing_patches = set(range(len(registered_patches))) - set(registered_patches)
