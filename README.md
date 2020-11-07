@@ -307,7 +307,16 @@ specified immediately following the ansi.font code and terminated by |. E.g
             
 -   In contrast to PySimpleGUI, MySimpleGUI doesn't require the key parameter in element specifications to be hashable.
 Please note that to access an item/attribute of a window of values, the key has to be hashable, still.
-            
+
+-   In contrast to PySimpleGUI, MySimpleGUI doesn't require the key parameter to be unique. 
+
+-   MySimpleGUI also allows PIL images to be used in Image elements.
+Also, when PIL is installed, other extensions than .png or .gif, e.g. .jpg can be used in Image elements.
+
+    Image.DrawImage and Image.Update support PIL Images as well as other extension than just
+.png or .gif if PIL is installed.
+
+Note that there's still no requirement to have PIL installled. But is highly recommended, though.
 -   MySimpleGUI can print Elements, Columns and Windows in a nice format, which can be very useful for debugging and just getting to
 know what MySimpleGUI/PySimpleGUI does internally.
     For instance:
