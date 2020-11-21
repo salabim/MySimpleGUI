@@ -688,7 +688,7 @@ import io"""
     elif line.strip() in ("except:", "except Exception as e:"):  # exception handler insertion
         register_patch(28)
         indent = line_to_indent(line)
-        code.add("except Exception as e:", indent=indent)
+        exception_line = line
         buffered_lines = []
         while line_to_indent(lines.peek()) > indent:
             line = next(lines)
@@ -703,6 +703,7 @@ import io"""
             if line.strip().startswith("print("):
                 requires_raise = True
         if requires_raise:
+            code.add("except Exception as e:", indent=indent)
             code.add(
                 """\
 if RAISE_ERRORS:
@@ -722,6 +723,7 @@ if RAISE_ERRORS:
                 indent=indent + 4,
             )
         else:
+            code.add(exception_line)
             code.add(buffered_lines)
 
     #    elif line.strip().startswith("if key in settings.dict:"):
@@ -817,9 +819,34 @@ else:
 """,
             indent=indent,
         )
-    elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
+    elif "__delitem__" in line:
         register_patch(34)
+        code.add(line)
+        indent = line_to_indent(line)
+        while line_to_indent(lines.peek()) >= indent:
+            code.add(next(lines))
+        code.add("""\
+def __getattr__(self, item):
+    if item in self.dict:
+        return self[item]
+    else:
+        return super().__getattr(item)
+
+def __setattr__(self, item, value):
+    trace_details = traceback.format_stack()
+    if trace_details[-1].split(",")[0] == trace_details[-2].split(",")[0]: # internal or external?
+        return super().__setattr__(item, value)
+    else:
+        self[item] = value
+
+def __delattr__(self, item):
+    del self[item]""", indent = indent)
+
+    elif line.startswith("if __name__ == "):  # no more PySimpleGUI startup screen
+        register_patch(35)
         break
+
+
 
     else:
         register_patch(34)
