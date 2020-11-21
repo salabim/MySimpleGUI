@@ -12,7 +12,7 @@ from pathlib import Path
 import os
 import collections
 
-version = __version__ = "1.1.10"
+version = __version__ = "1.1.11"
 mysimplegui_version = version
 
 
