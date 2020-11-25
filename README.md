@@ -310,6 +310,64 @@ Please note that to access an item/attribute of a window of values, the key has 
 
 -   In contrast to PySimpleGUI, MySimpleGUI doesn't require the key parameter to be unique. 
 
+-   Upon creation of an element in a layout, a `freeze()` method call can be added.
+
+    If a froxen element is made invisible, the space keeps reserved and no changes in the positions of other element
+    will occur when the element is made invisible. Example:
+    
+    ```
+    import MySimpleGUI as sg
+
+    layout = [  [sg.Text("<<"), sg.Button('Button1', key='button1').freeze(), sg.Button('Button2', key='button2').freeze(), sg.Text(">>")],
+                [sg.Checkbox('Show Button1', default=True, enable_events=True, key="sb1"), sg.Checkbox('Show Button 2', default=True, enable_events=True, key="sb2")]]
+
+    window = sg.Window('Window', layout)
+
+    while True: 
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+        if event == 'sb1':
+            window['button1'].update(visible=window.sb1.get())
+        if event == 'sb2':
+            window['button2'].update(visible=window.sb2.get())
+
+    window.close()
+    
+    ```
+-   In MySimpleGUI, anywhere where an explicit False or True is required as a parameter, that can now
+be any falsy (apart from None) or any truthy value.
+
+    So,
+    
+    ```
+    window['button2'].update(visible=bool(window.sb2.get()))
+    ```
+    
+    is equivalent to
+    
+    ```
+    window['button2'].update(visible=window.sb2.get())
+    ```
+
+-   The `__call__` method of any element still calls the `update` method, but will now also return the current value. This
+is useful to avoid using the `get` method:
+
+    ```
+        window['button2'].update(visible=window.sb2())`
+    ```
+    
+    is equivalent to
+    
+    ```
+        window['button2'].update(visible=window.sb2.get())`
+    ```
+    Notice that this is NOT equivalent to:
+    
+    ```
+        window['button2'].update(visible=window.sb2.update())
+    ```
+
 -   MySimpleGUI also allows PIL images to be used in Image elements.
 Also, when PIL is installed, other extensions than .png or .gif, e.g. .jpg can be used in Image elements.
 
@@ -345,35 +403,7 @@ know what My  SimpleGUI/PySimpleGUI does internally.
         
     The output will suppress all attributes that are None or (None, None) and will try and expand where possible.
             
--   Normally, a traceback will just show line numbers and not the line itself in the patched PySimpleGUI source, like:
-    ```
-    Traceback (most recent call last):
-      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
-        window.Number14.update("Hallo")
-      File "<string>", line 7115, in __getattr__
-    AttributeError: 'Number14'
-    ```
-    But it is possible to get full traceback when an exception is raised, like:
-    ```
-    Traceback (most recent call last):
-      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\test pysimplegui.py", line 23, in <module>
-        window.Number14.update("Hallo")
-      File "c:\Users\Ruud\Dropbox (Personal)\Apps\Python Ruud\MySimpleGUI\PySimpleGUI_patched.py", line 7115, in __getattr__
-        raise AttributeError(e) from None
-    AttributeError: 'Number14'
-    ```
-    This is done by saving a file PySimpleGUI_patched. This way of importing MySimpleGUI is slightly slower.
-    To enable full traceback, the environment variable MySimpleGUI_full_traceback has to be set to a value
-    other than the null string.
-    The easiest way to do that is by putting
-    ```
-    import os
-    os.environ["MySimpleGUI_full_traceback"] = "1"
-    ```
-    before
-    ```
-    import MySimpleGUI as sg 
-    ```
+-   
     
 -  In PySimpleGUI the target in several Button functions (like FilesBrowse and FolderBrowse) defaults to the
 (ThisRow, -1). When you want it to point to the button itself, you have to specify a target that is equal
@@ -398,13 +428,9 @@ points to 'itself' if the target parameter is the null string or None.
     `sg.mysimplegui_version` will return the MySimpleGUI_version
 
 -   Perfomance:
-    Loading MySimpleGUI takes a bit longer than loading PySimpleGUI (with full traceback adding some extra time).
-    In most cases, this won't cause a problem.
-    At runtime there will be no difference in perfomance.
-    If load time performance is an issue, it is also possible to use
-    ```
-    import PySimpleGUI_patched as sg
-    ```
-    , but then the patches have to be applied whenever a new versions of PySimpleGUI is installed.
+    Whenever a new version of PySimpleGUI or MySimpleGUI is detected. loading MySimpleGUI will take a bit longer 
+    as a PySimpleGUI_patched file has to be written.
     
--   MySimpleGUI has its own standard startup popup, with just the option to save generated code as `PySimpleGUI_patched.py`.
+    Once the PySimpleGUI_patched is created, there will be no difference in perfomance.
+    
+-   If your run MySimpleGUI, a simple text confirmation will be printed.
