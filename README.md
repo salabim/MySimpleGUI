@@ -336,7 +336,7 @@ Please note that to access an item/attribute of a window of values, the key has 
     
     ```
     
-    The freeze method has parameter *enabled* that can be used to specify whether the element should be frozen.
+    The freeze method has a parameter *enabled* that can be used to specify whether the element should be frozen or not.
     The default is True.
     
 -   In MySimpleGUI, anywhere where an explicit False or True is required as a parameter, that can now
