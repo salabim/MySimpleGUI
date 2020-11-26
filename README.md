@@ -406,8 +406,6 @@ know what My  SimpleGUI/PySimpleGUI does internally.
             Visible = True
         
     The output will suppress all attributes that are None or (None, None) and will try and expand where possible.
-            
--   
     
 -  In PySimpleGUI the target in several Button functions (like FilesBrowse and FolderBrowse) defaults to the
 (ThisRow, -1). When you want it to point to the button itself, you have to specify a target that is equal
