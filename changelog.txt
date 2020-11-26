@@ -1,12 +1,64 @@
 Changelog MySimpleGUI
 =====================
-vs 1.1.11  2020-11-17
+vs 1.1.12  2020-11-26
 ---------------------
-The user settings can now be accessed also via attributes, provoded the name is a valid attribute.
+-   Import is now always via a PySimpleGUI_patched.py file.
+    When either PySimpleGUI.py or MySimpleGUI.py was changed, this file will be regenerated and stored
+    in the current directory.
+    This implies that the first time after a change, the load time will be (slightly) longer.
+    From this version on, therefore error messages will always show the file context.
+    It also implies that the environment variable "MySimpleGUI_full_traceback" is no longer required nor used.
+
+-   The popup window when MySimpleGUI.py is just run is now replaced by a simple text confirmation.
+
+-   Upon creation of an element in a layout, a freeze() method call can be added.
+
+    If a froxen element is made invisible, the space keeps reserved and no changes in the positions of other element
+    will occur when the element is made invisible. Example:
+        import MySimpleGUI as sg
+    
+        layout = [  [sg.Text("<<"), sg.Button('Button1', key='button1').freeze(), sg.Button('Button2', key='button2').freeze(), sg.Text(">>")],
+                    [sg.Checkbox('Show Button1', default=True, enable_events=True, key="sb1"), sg.Checkbox('Show Button 2', default=True, enable_events=True, key="sb2")]]
+    
+        window = sg.Window('Window', layout)
+    
+        while True: 
+            event, values = window.read()
+            if event == sg.WIN_CLOSED or event == 'Exit':
+                break
+            if event == 'sb1':
+                window['button1'].update(visible=window.sb1.get())
+            if event == 'sb2':
+                window['button2'].update(visible=window.sb2.get())
+    
+        window.close()
+    
+    The freeze method has one parameter 'enabled', that can be used to control whether an element
+    should be frozen or not. The default is True.
+
+
+-   From this version, anywhere where an explicit False or True is required as a parameter, that can now
+    be any falsy (apart from None) or any truthy value.
+    So, now
+        window['button2'].update(visible=bool(window.sb2.get()))
+    is equivalent to
+        window['button2'].update(visible=window.sb2.get())
+
+            
+-   The __call__ method of any element will still implicitely call update but will now return the current value.
+    So, calling .get() can be avoided:
+        window['button2'].update(visible=window.sb2())
+    is equivalent to
+        window['button2'].update(visible=window.sb2.get())
+
+
+vs 1.1.11  2020-11-21
+---------------------
+The user settings can now be accessed also via attributes, provided the name is a valid attribute.
 So, now we can say
-    settings.get("name")           setting["name"]                  settings.name
-    settings.set("name", "test")   settings["name"].name = "test"   settings.name = "test"
-    settings.delete_entry("name")  del settings["name]              del settings.name
+    settings.get("name")           setting["name"]             settings.name
+    settings.set("name", "test")   settings["name"] = "test"   settings.name = "test"
+    settings.delete_entry("name")  del settings["name]         del settings.name
 
 vs 1.1.10  2020-11-06
 ---------------------
