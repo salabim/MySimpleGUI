@@ -13,7 +13,7 @@ import os
 import collections
 import datetime
 
-version = __version__ = "1.1.12"
+version = __version__ = "1.1.13"
 mysimplegui_version = version
 
 pysimplegui_name = "PySimpleGUI"
@@ -87,7 +87,9 @@ else:
     raise ImportError(pysimplegui_name + ".py" + " not found")
 
 mysimplegui_path = Path(__file__)
-pysimplegui_patched_path = mysimplegui_path.parent / (pysimplegui_patched_name + ".py")
+
+app_path = Path(sys.modules["__main__"].__file__)
+pysimplegui_patched_path = app_path.parent / (pysimplegui_patched_name + ".py")
 
 patch_info = "# patch info "
 stat = os.stat(pysimplegui_path)
@@ -923,10 +925,12 @@ def __delattr__(self, item):
         f.write("\n".join(code))
 
 for var in list(vars().keys()):
-    if var not in ("__name__", "pysimplegui_patched_path", "pysimplegui_patched_match"):
+    if var not in ("__name__", "mysimplegui_version", "pysimplegui_patched_path", "pysimplegui_patched_match"):
         del vars()[var]
 
 from PySimpleGUI_patched import *
+
+__version__ = ver
 
 if __name__ == "__main__":
     if pysimplegui_patched_match:

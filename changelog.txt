@@ -1,5 +1,17 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.13  2020-11-30
+---------------------
+-   Bug fix
+    The __version__ was not set properly, thus making it impossible to run MySimpleGUI from site-packages.
+    Fixed
+    
+-   Bug fix
+    The PySimpleGUI_patched.py was always written to the folder where MySimpleGUI was installed, instead
+    of in the current directory.
+    Fixed.
+
+
 vs 1.1.12  2020-11-26
 ---------------------
 -   Import is now always via a PySimpleGUI_patched.py file.
