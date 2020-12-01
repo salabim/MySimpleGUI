@@ -212,8 +212,6 @@ def _install(files, url=None):
 
 
 if __name__ == "__main__":
-    info = _install(
-        files="MySimpleGUI.py".split()
-    )
+    info = _install(files="MySimpleGUI.py !changelog.txt".split())
     print(info.package + " " + info.version + " successfully installed in " + info.path)
     print("files copied: ", ", ".join(info.files_copied))
