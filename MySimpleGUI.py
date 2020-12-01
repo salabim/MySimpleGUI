@@ -15,7 +15,8 @@ import datetime
 
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
-__version__ = "1.1.14"
+__version__ = "1.1.15"
+
 
 class peekable:
     def __init__(self, iterable):
@@ -39,6 +40,7 @@ class peekable:
 
 registered_patches = collections.defaultdict(int)
 registered_patches[37] = 0
+
 
 def register_patch(n):
     registered_patches[n] += 1
@@ -74,6 +76,7 @@ class CodeList(list):
         for line in lines:
             self.append(indentstr + line.replace("\x1b", "\\x1b"))
 
+
 for path in sys.path:
     pysimplegui_path = Path(path) / (pysimplegui_name + ".py")
     if pysimplegui_path.is_file():
@@ -99,8 +102,8 @@ pysimplegui_patched_match = False
 if pysimplegui_patched_path.is_file():
     try:
         with open(pysimplegui_patched_path, "rb") as f:
-            f.seek(-len(patch_info),os.SEEK_END)
-            read_patch_info = f.read().decode('utf-8')
+            f.seek(-len(patch_info), os.SEEK_END)
+            read_patch_info = f.read().decode("utf-8")
             if read_patch_info == patch_info:
                 pysimplegui_patched_match = True
     except OSError:
@@ -124,7 +127,7 @@ if not pysimplegui_patched_match:
         )
     )
 
-    this_class = "?" 
+    this_class = "?"
     for line in lines:
         if "is True" in line and line.strip()[0] != ":":
             s = line.split("is True", 1)[0]
@@ -152,7 +155,7 @@ if not pysimplegui_patched_match:
             code.add(
                 """\
 self.internal = Window.Internal(self)""",
-            indent=indent,
+                indent=indent,
             )
 
         elif "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
@@ -555,7 +558,9 @@ def writable(self):
         elif "element.TKText.insert(1.0, element.DefaultText)" in line:
             register_patch(14)
             code.add(
-                line.replace("element.TKText.insert(1.0, element.DefaultText)", "print(element.DefaultText, file=element)")
+                line.replace(
+                    "element.TKText.insert(1.0, element.DefaultText)", "print(element.DefaultText, file=element)"
+                )
             )
 
         elif "background_color_for_value=background_color" in line:
@@ -581,7 +586,8 @@ def writable(self):
             register_patch(18)
             code.add(
                 line.replace(
-                    "str(background_color_for_value)+')'", "str(background_color_for_value)+',' + str(font_for_value)+')'"
+                    "str(background_color_for_value)+')'",
+                    "str(background_color_for_value)+',' + str(font_for_value)+')'",
                 )
             )
 
@@ -590,7 +596,9 @@ def writable(self):
         ):
             register_patch(19)
             code.add(
-                line.replace("text_color=None, background_color=None", "text_color=None, background_color=None, font=None")
+                line.replace(
+                    "text_color=None, background_color=None", "text_color=None, background_color=None, font=None"
+                )
             )
 
         elif "text_color=text_color, background_color=background_color" in line and line.strip().startswith(
@@ -736,7 +744,11 @@ import io"""
                 buffered_lines.append(line)
             requires_raise = False
             for line in buffered_lines:
-                if line.strip().startswith("pass") or line.strip().startswith("return") or line.strip().startswith("break"):
+                if (
+                    line.strip().startswith("pass")
+                    or line.strip().startswith("return")
+                    or line.strip().startswith("break")
+                ):
                     requires_raise = False
                     break
                 if line.strip().startswith("print("):
@@ -864,7 +876,8 @@ else:
             indent = line_to_indent(line)
             while line_to_indent(lines.peek()) >= indent:
                 code.add(next(lines))
-            code.add("""\
+            code.add(
+                """\
 def __getattr__(self, item):
     if item in self.dict:
         return self[item]
@@ -879,7 +892,9 @@ def __setattr__(self, item, value):
         self[item] = value
 
 def __delattr__(self, item):
-    del self[item]""", indent = indent)
+    del self[item]""",
+                indent=indent,
+            )
 
         elif line.strip() == "return self.update(*args, **kwargs)":
             register_patch(38)
@@ -890,8 +905,8 @@ def __delattr__(self, item):
             break
         else:
             code.add(line)
-    print("*****",__version__)
-    code.add(f"""\
+    code.add(
+        f"""\
 class _Info:
     pass
 pysimplegui = _Info()
@@ -899,27 +914,81 @@ pysimplegui.version = version
 pysimplegui.__version__ = __version__
 
 del _Info
-version = __version__ = mysimplegui_version = "{__version__}\"""".format(__version__=__version__))
+version = __version__ = mysimplegui_version = "{__version__}\"""".format(
+            __version__=__version__
+        )
+    )
 
     code.add(patch_info)
 
-    to_be_registered_patches = {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 3, 6: 1, 7: 7, 8: 1, 9: 1, 10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 2, 16: 1, 17: 1, 18: 1, 19: 3, 20: 1, 21: 1, 22: 6, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 29: 1, 30: 1, 31: 9, 32: 1, 33: 2, 34: 1, 35: 2, 36: 2, 37:0, 38:1}
+    to_be_registered_patches = {
+        0: 1,
+        1: 1,
+        2: 1,
+        3: 1,
+        4: 1,
+        5: 3,
+        6: 1,
+        7: 7,
+        8: 1,
+        9: 1,
+        10: 1,
+        11: 1,
+        12: 1,
+        13: 1,
+        14: 1,
+        15: 2,
+        16: 1,
+        17: 1,
+        18: 1,
+        19: 3,
+        20: 1,
+        21: 1,
+        22: 6,
+        23: 1,
+        24: 1,
+        25: 1,
+        26: 1,
+        27: 1,
+        29: 1,
+        30: 1,
+        31: 9,
+        32: 1,
+        33: 2,
+        34: 1,
+        35: 2,
+        36: 2,
+        37: 0,
+        38: 1,
+    }
     if 35 in registered_patches:
         to_be_registered_patches[35] = registered_patches[35]  # ignore test for patch 35 as it may be 1 or 2
     mismatch = False
     for patch in to_be_registered_patches:
         if patch in registered_patches:
             if registered_patches[patch] != to_be_registered_patches[patch]:
-                print("patch {patch} should be applied {tbr} times , but it {r} times".format(patch=patch, tbr=to_be_registered_patches[patch], r=registered_patches[patch]))
+                print(
+                    "patch {patch} should be applied {tbr} times , but it {r} times".format(
+                        patch=patch, tbr=to_be_registered_patches[patch], r=registered_patches[patch]
+                    )
+                )
                 mismatch = True
         else:
-            print("patch {patch} should be applied {tbr} times, but is not registered at all".format(patch=patch, tbr=to_be_registered_patches[patch]))
-            mismatch=True
+            print(
+                "patch {patch} should be applied {tbr} times, but is not registered at all".format(
+                    patch=patch, tbr=to_be_registered_patches[patch]
+                )
+            )
+            mismatch = True
 
     for patch in registered_patches:
         if patch not in to_be_registered_patches:
-            print("patch {patch} is applied {r} times, but is not in the to_be_registered dict at all".format(patch=patch, r=registered_patches[patch]))
-            mismatch=True
+            print(
+                "patch {patch} is applied {r} times, but is not in the to_be_registered dict at all".format(
+                    patch=patch, r=registered_patches[patch]
+                )
+            )
+            mismatch = True
 
     if mismatch:
         patches = {}
@@ -927,7 +996,6 @@ version = __version__ = mysimplegui_version = "{__version__}\"""".format(__versi
             patches[patch] = registered_patches[patch]
         print("Suggested mod:")
         print("to_be_registered_patches = {patches}".format(patches=patches))
-
 
     if mismatch:
         raise Warning("patches mismatch")
