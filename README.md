@@ -425,9 +425,11 @@ points to 'itself' if the target parameter is the null string or None.
     
 -   Version
 
-    `sg.version` will return the inherited PySimpleGUI version
+    `sg.version` 'sg.__version` or `sg.mysimplegui_version` will return the version of MySimpleGUI
     
-    `sg.mysimplegui_version` will return the MySimpleGUI_version
+    `sg.pysimplegui_version` will return the long PySimpleGUI version (`version` in PySimpleGUI)
+
+    `sg.pysimplegui__version__` will return the short PySimpleGUI version (`__version__` in PySimpleGUI)
 
 -   Perfomance:
     Whenever a new version of PySimpleGUI or MySimpleGUI is detected. loading MySimpleGUI will take a bit longer 
