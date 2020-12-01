@@ -704,7 +704,9 @@ import io"""
         elif line.startswith("version = "):  # check compatibilty of PySimpleGUI version (at patch time)
             register_patch(27)
             code.add(line)
+            save__version__ = __version__
             exec(line)
+            __version__ = save__version__
             this_pysimplegui_version = version.split()[0]
             minimal_pysimplegui_version = "4.27.4"
             this_pysimplegui_version_tuple = tuple(map(int, this_pysimplegui_version.split(".")))
@@ -888,6 +890,16 @@ def __delattr__(self, item):
             break
         else:
             code.add(line)
+    print("*****",__version__)
+    code.add(f"""\
+class _Info:
+    pass
+pysimplegui = _Info()
+pysimplegui.version = version
+pysimplegui.__version__ = __version__
+
+del _Info
+version = __version__ = mysimplegui_version = "{__version__}\"""".format(__version__=__version__))
 
     code.add(patch_info)
 
@@ -919,19 +931,16 @@ def __delattr__(self, item):
 
     if mismatch:
         raise Warning("patches mismatch")
+
     with open(pysimplegui_patched_path, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
 for var in list(vars().keys()):
-    if var not in ("__name__", "__version__", "pysimplegui_patched_path", "pysimplegui_patched_match"):
+    if var not in ("__name__", "pysimplegui_patched_path", "pysimplegui_patched_match"):
         del vars()[var]
 
 from PySimpleGUI_patched import *
-
-from PySimpleGUI_patched import __version__ as pysimplegui__version__
-from PySimpleGUI_patched import version as pysimplegui_version
-
-mysimplegui_version = version = __version__ = "1.1.14"
+from PySimpleGUI_patched import __version__
 
 if __name__ == "__main__":
     if pysimplegui_patched_match:
