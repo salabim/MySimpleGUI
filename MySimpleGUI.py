@@ -13,11 +13,9 @@ import os
 import collections
 import datetime
 
-version = __version__ = "1.1.13"
-mysimplegui_version = version
-
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
+__version__ = "1.1.14"
 
 class peekable:
     def __init__(self, iterable):
@@ -122,7 +120,7 @@ if not pysimplegui_patched_match:
 # Patches (c)2020  Ruud van der Ham, salabim.org
 
 """.format(
-            version=version, pysimplegui_name=pysimplegui_name
+            version=__version__, pysimplegui_name=pysimplegui_name
         )
     )
 
@@ -925,12 +923,15 @@ def __delattr__(self, item):
         f.write("\n".join(code))
 
 for var in list(vars().keys()):
-    if var not in ("__name__", "mysimplegui_version", "pysimplegui_patched_path", "pysimplegui_patched_match"):
+    if var not in ("__name__", "__version__", "pysimplegui_patched_path", "pysimplegui_patched_match"):
         del vars()[var]
 
 from PySimpleGUI_patched import *
 
-__version__ = ver
+from PySimpleGUI_patched import __version__ as pysimplegui__version__
+from PySimpleGUI_patched import version as pysimplegui_version
+
+mysimplegui_version = version = __version__ = "1.1.14"
 
 if __name__ == "__main__":
     if pysimplegui_patched_match:

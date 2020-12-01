@@ -1,5 +1,12 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.14  2020-12-01
+---------------------
+-   The __version__ information is now retrieved in a more stable way.
+    The version of MySimpleGUI is now in mysimplegui_version, version and __version__
+    The long version of PySimpleGUI is now in pysimplegui_version
+    The short version of PySimpleGUI is now in pysimplegui__version__
+
 vs 1.1.13  2020-11-30
 ---------------------
 -   Bug fix
