@@ -431,10 +431,13 @@ points to 'itself' if the target parameter is the null string or None.
 
     `sg.pysimplegui.__version__` will return the short PySimpleGUI version (`__version__` in PySimpleGUI)
 
+-   The file PySimpleGUI_patched.py will be stored in the folder where MySimpleGUI was imported from.
+    
 -   Perfomance:
+
     Whenever a new version of PySimpleGUI or MySimpleGUI is detected. loading MySimpleGUI will take a bit longer 
     as a PySimpleGUI_patched file has to be written.
     
-    Once the PySimpleGUI_patched is created, there will be virtually no difference in perfomance.
+    Once the PySimpleGUI_patched.py file is created, there will be virtually no difference in perfomance.
     
--   If your run MySimpleGUI, a simple text confirmation will be printed.
+-   If you run MySimpleGUI, a simple text confirmation will be printed.
