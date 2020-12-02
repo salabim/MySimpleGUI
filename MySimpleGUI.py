@@ -15,7 +15,7 @@ import datetime
 
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
-__version__ = "1.1.15"
+__version__ = "1.1.16"
 
 
 class peekable:
@@ -89,8 +89,7 @@ else:
 
 mysimplegui_path = Path(__file__)
 
-app_path = Path(sys.modules["__main__"].__file__)
-pysimplegui_patched_path = app_path.parent / (pysimplegui_patched_name + ".py")
+pysimplegui_patched_path = mysimplegui_path.parent / (pysimplegui_patched_name + ".py")
 
 patch_info = "# patch info "
 stat = os.stat(pysimplegui_path)
@@ -828,7 +827,11 @@ if isinstance(element.Filename, (str, Path)):
             else:
                 raise ValueError("file format not supported. Try installing PIL")
     else:
-        raise FileNotFoundError(element.Filename)
+        if element.Filename == "":
+            photo = tk.PhotoImage(file="")
+
+        else:
+            raise FileNotFoundError(element.Filename)
 else:
     if PIL:
         photo = ImageTk.PhotoImage(element.Filename)
@@ -1003,12 +1006,15 @@ version = __version__ = mysimplegui_version = "{__version__}\"""".format(
     with open(pysimplegui_patched_path, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
+sys.path.insert(0, str(mysimplegui_path.parent))
 for var in list(vars().keys()):
-    if var not in ("__name__", "pysimplegui_patched_path", "pysimplegui_patched_match"):
+    if var not in ("__name__", "pysimplegui_patched_path", "pysimplegui_patched_match", "sys"):
         del vars()[var]
+
 
 from PySimpleGUI_patched import *
 from PySimpleGUI_patched import __version__
+sys.path.pop(0)
 
 if __name__ == "__main__":
     if pysimplegui_patched_match:

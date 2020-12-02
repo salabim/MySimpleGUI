@@ -1,6 +1,12 @@
 Changelog MySimpleGUI
 =====================
 
+vs 1.1.16  2020-12-02
+---------------------
+-   The file PySimpleGUI_patched.py is now stored in the location where MySimpleGUI was imported from.
+
+-   Bug in Image, when no image was specified fixed.
+
 vs 1.1.15  2020-12-01
 ---------------------
 -   The __version__ information is now retrieved in a more stable way.
