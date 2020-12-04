@@ -338,7 +338,17 @@ Please note that to access an item/attribute of a window of values, the key has 
     
     The freeze method has a parameter *enabled* that can be used to specify whether the element should be frozen or not.
     The default is True.
+
+-   All elements can now be disabled (grayed out) or enabled 9not grayed out) with the
+    `disable` and `enable` methods of Element. These method have a parameter that control the operation.
+    The following calls have the same effect:
     
+    `el.enable()`, `el.enable(True)`, `el.disable(False)`
+
+    `el.disable()`, `el.disable(True)`, `el.enable(False)`
+
+    The calls have a second parameter `exclude` which is a list of *simple* elements that should not be enabled/disabled.
+
 -   In MySimpleGUI, anywhere where an explicit False or True is required as a parameter, that can now
 be any falsy (apart from None) or any truthy value.
 
