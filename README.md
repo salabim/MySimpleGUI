@@ -347,7 +347,7 @@ Please note that to access an item/attribute of a window of values, the key has 
 
     `el.disable()`, `el.disable(True)` and `el.enable(False)`
 
-    The calls have a second parameter `exclude` which is a list of *simple* elements that should not be enabled/disabled.
+    The calls have a second parameter `exclude` which is a list of elements that should not be enabled/disabled.
 
 -   In MySimpleGUI, anywhere where an explicit False or True is required as a parameter, that can now
 be any falsy (apart from None) or any truthy value.
