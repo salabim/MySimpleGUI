@@ -17,6 +17,9 @@ supported by MySimpleGUI.
 Therefore, I choose another way: patching the original PySimpleGUI code at runtime. This is not a 100%
 guarantee that future PySimpleGUI versions will work with MySimpleGUI, but the way it's done is pretty stable.
 
+Please be warned that if you decide to use any of MySimpleGUI's unique features, there's possible no way back
+to PySimpleGUI? In other words PySimpleGUI is not upward compatible with MySimpleGUI.
+
 **Installation**
 
 You can either install MySimpleGUI by downloading the file MySimpleGUI.py from 
