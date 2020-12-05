@@ -6,11 +6,10 @@ vs 1.1.17
     Element.enable() and Element.disable()
     Both methods have a parameter to control the operation, which is True by default.
     Thus el.enable() is the same as el.enable(True) and el.disable(False)
-    And el.disable() is the same as el.disable(True) and el.enable(True)
+    And el.disable() is the same as el.disable(True) and el.enable(False)
 
     The enable and disable methods have a second parameter exclude, with which you can specify
-    which elements should not excluded from the enable/disable action. Note that exclude is a list of
-    'simple' elements only.
+    which elements should be excluded from the enable/disable action.
 
 -   Image.update now also supports removing the image (by displaying an empty image).
     Just use filename="" if you want that.
