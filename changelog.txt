@@ -15,15 +15,16 @@ vs 1.1.17
 -   Image.update now also supports removing the image (by displaying an empty image).
     Just use filename="" if you want that.
 
--   From this version, the test for explicit False or True as a parameter, is applied
+-   From this version, the test for explicit False or True as a parameter, is removed
     even when PySimpleGUI tested via ... == False or ... == True.
+    So now falsy or truthy values are always handled correcly now.
     
 vs 1.1.16  2020-12-02
 ---------------------
 -   The file PySimpleGUI_patched.py is now stored in the location where MySimpleGUI was imported from.
     This removes the bug fix as introduced in vs 1.1.13 .
     Technical detail: in order do that, the sys.path list will be prepended temporarily with the path
-    where MySimpleGUI.py resides, prior to importing PySimpleGUI.py.
+    where MySimpleGUI.py resides, prior to importing PySimpleGUI_patched.py.
 
 -   Bug in Image, when no image was specified fixed.
 
