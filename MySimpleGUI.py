@@ -15,7 +15,7 @@ import datetime
 
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
-__version__ = "1.1.16"
+__version__ = "1.1.17"
 
 
 class peekable:
@@ -128,19 +128,37 @@ if not pysimplegui_patched_match:
 
     this_class = "?"
     for line in lines:
-        if "is True" in line and line.strip()[0] != ":":
+        if " is True" in line and line.strip()[0] != ":":
             s = line.split("is True", 1)[0]
             s1 = s.split()[-1]
             if s1 + " is True" not in line:
                 register_patch(37)
             line = line.replace(s1 + " is True", "bool(" + s1 + ")")
 
-        if "is False" in line and line.strip()[0] != ":":
+        if " is False" in line and line.strip()[0] != ":":
             s = line.split("is False", 1)[0]
             s1 = s.split()[-1]
             if s1 + " is False" not in line:
                 register_patch(37)
-            line = line.replace(s1 + " is False", "(not " + s1 + " and " + s1 + " is not None)")
+            line = line.replace(s1 + " is False", "(not bool(" + s1 + ") and " + s1 + " is not None)")
+
+        if " == True" in line and line.strip()[0] != ":":
+            s = line.split("== True", 1)[0]
+            s1 = s.split()[-1]
+            if "'" not in s1:
+                if s1 + " == True" not in line:
+                    print('***', line)
+                    register_patch(37)
+                line = line.replace(s1 + " == True", "bool(" + s1 + ")")
+
+        if " == False" in line and line.strip()[0] != ":":
+            s = line.split("== False", 1)[0]
+            s1 = s.split()[-1]
+            if s1 + " == False" not in line:
+                print('***', line)
+
+                register_patch(37)
+            line = line.replace(s1 + " == False", "(not bool(" + s1 + ") and " + s1 + " is not None)")
 
         if line.startswith("class "):
             parts = line.split()
@@ -278,6 +296,12 @@ results = events, values
             indent = line_to_indent(line)
             code.add(
                 """\
+def disable(self, disabled=True, exclude=[]):
+    set_state(self, not disabled, exclude)
+    
+def enable(self, enabled=True, exclude=[]):
+    set_state(self, enabled, exclude)
+
 def type_name(self):
     type_name = self.Type
     type_name = type_name.replace("option menu","OptionMenu")
@@ -340,7 +364,22 @@ class list_repr(list):
             l = repr(v).split("\\n")
             for x in l:
                 result.append("    " + x)
-        return "\\n".join(result)"""
+        return "\\n".join(result)
+        
+
+def set_state(item, enabled, exclude):
+    if hasattr(item, "Rows"):
+        for el in item.Rows:
+            set_state(el, enabled, exclude)
+    elif isinstance(item, list):
+        for el in item:
+            set_state(el, enabled,exclude)
+    else:
+        if item not in exclude:
+            if enabled:
+                item.Widget.configure(state="normal")
+            else:
+                item.Widget.configure(state="disabled")"""
             )
 
             code.add(line)
@@ -863,7 +902,10 @@ if isinstance(filename, (str, Path)):
             else:
                 raise ValueError("file format not supported. Try installing PIL")
     else:
-        raise FileNotFoundError(filename)
+        if filename == "":
+            image = tk.PhotoImage(file="")
+        else:
+            raise FileNotFoundError(filename)
 else:
     if PIL:
         image = ImageTk.PhotoImage(filename)
@@ -1006,7 +1048,7 @@ version = __version__ = mysimplegui_version = "{__version__}\"""".format(
     with open(pysimplegui_patched_path, "w", encoding="utf-8") as f:
         f.write("\n".join(code))
 
-sys.path.insert(0, str(mysimplegui_path.parent))
+sys.path.insert(0, str(pysimplegui_patched_path.parent))
 for var in list(vars().keys()):
     if var not in ("__name__", "pysimplegui_patched_path", "pysimplegui_patched_match", "sys"):
         del vars()[var]
@@ -1014,6 +1056,7 @@ for var in list(vars().keys()):
 
 from PySimpleGUI_patched import *
 from PySimpleGUI_patched import __version__
+
 sys.path.pop(0)
 
 if __name__ == "__main__":

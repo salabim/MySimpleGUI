@@ -1,9 +1,29 @@
 Changelog MySimpleGUI
 =====================
+vs 1.1.17  
+---------------------
+-   All elements can now be disabled (grayed out) or enabled (not grayed out) with the methods
+    Element.enable() and Element.disable()
+    Both methods have a parameter to control the operation, which is True by default.
+    Thus el.enable() is the same as el.enable(True) and el.disable(False)
+    And el.disable() is the same as el.disable(True) and el.enable(True)
 
+    The enable and disable methods have a second parameter exclude, with which you can specify
+    which elements should not excluded from the enable/disable action. Note that exclude is a list of
+    'simple' elements only.
+
+-   Image.update now also supports removing the image (by displaying an empty image).
+    Just use filename="" if you want that.
+
+-   From this version, the test for explicit False or True as a parameter, is applied
+    even when PySimpleGUI tested via ... == False or ... == True.
+    
 vs 1.1.16  2020-12-02
 ---------------------
 -   The file PySimpleGUI_patched.py is now stored in the location where MySimpleGUI was imported from.
+    This removes the bug fix as introduced in vs 1.1.13 .
+    Technical detail: in order do that, the sys.path list will be prepended temporarily with the path
+    where MySimpleGUI.py resides, prior to importing PySimpleGUI.py.
 
 -   Bug in Image, when no image was specified fixed.
 
@@ -14,18 +34,7 @@ vs 1.1.15  2020-12-01
     The long version of PySimpleGUI is now in sg.pysimplegui.version
     The short version of PySimpleGUI is now in sg.pysimplegui.__version__
 
-    The version info is now also correctly stored in PySimpleGUI_patched.
-
-vs 1.1.13  2020-11-30
----------------------
--   Bug fix
-    The __version__ was not set properly, thus making it impossible to run MySimpleGUI from site-packages.
-    Fixed
-    
--   Bug fix
-    The PySimpleGUI_patched.py was always written to the folder where MySimpleGUI was installed, instead
-    of in the current directory.
-    Fixed.
+    The version info is now also correctly stored in PySimpleGUI_patched.py .
 
 
 vs 1.1.12  2020-11-26
@@ -41,7 +50,7 @@ vs 1.1.12  2020-11-26
 
 -   Upon creation of an element in a layout, a freeze() method call can be added.
 
-    If a froxen element is made invisible, the space keeps reserved and no changes in the positions of other element
+    If a frozen element is made invisible, the space keeps reserved and no changes in the positions of other element
     will occur when the element is made invisible. Example:
         import MySimpleGUI as sg
     
