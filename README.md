@@ -428,7 +428,7 @@ points to 'itself' if the target parameter is the null string or None.
 -   The user settings can now be accessed also via attributes, provided the name is a valid attribute.
     So, now we can say
     ```
-    settings.get("name")           settings["name"]             settings.name
+    settings.get("name")           settings["name"]            settings.name
     settings.set("name", "test")   settings["name"] = "test"   settings.name = "test"
     settings.delete_entry("name")  del settings["name]         del settings.name
     ```
