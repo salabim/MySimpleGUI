@@ -343,9 +343,9 @@ Please note that to access an item/attribute of a window of values, the key has 
     `disable` and `enable` methods of Element. These method have a parameter that control the operation.
     The following calls have the same effect:
     
-    `el.enable()`, `el.enable(True)`, `el.disable(False)`
+    `el.enable()`, `el.enable(True)` and `el.disable(False)`
 
-    `el.disable()`, `el.disable(True)`, `el.enable(False)`
+    `el.disable()`, `el.disable(True)` and `el.enable(False)`
 
     The calls have a second parameter `exclude` which is a list of *simple* elements that should not be enabled/disabled.
 
