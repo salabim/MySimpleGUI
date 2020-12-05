@@ -423,12 +423,12 @@ to key, k or button_text. In order support the DRY (don't repeat yourself) princ
 points to 'itself' if the target parameter is the null string or None.
 
 -   In contrast to PySimpleGUI, MySimpleGUI correctly returns the null string upon pressing
-<Cancel> in FileBrowse, FilesBrowse and FolderBrowse, provided the target parameter points to 'itself' (see also bullet above).
+`<Cancel>` in FileBrowse, FilesBrowse and FolderBrowse, provided the target parameter points to 'itself' (see also bullet above).
     
 -   The user settings can now be accessed also via attributes, provided the name is a valid attribute.
     So, now we can say
     ```
-    settings.get("name")           setting["name"]             settings.name
+    settings.get("name")           settings["name"]             settings.name
     settings.set("name", "test")   settings["name"] = "test"   settings.name = "test"
     settings.delete_entry("name")  del settings["name]         del settings.name
     ```
