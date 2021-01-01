@@ -15,7 +15,7 @@ import datetime
 
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
-__version__ = "1.1.17"
+__version__ = "1.1.18"
 
 
 class peekable:
@@ -370,10 +370,12 @@ class list_repr(list):
 def set_state(item, enabled, exclude):
     if hasattr(item, "Rows"):
         for el in item.Rows:
-            set_state(el, enabled, exclude)
+            if el not in exclude:
+                set_state(el, enabled, exclude)
     elif isinstance(item, list):
         for el in item:
-            set_state(el, enabled,exclude)
+            if el not in exclude:
+                set_state(el, enabled,exclude)
     else:
         if item not in exclude:
             if enabled:
@@ -445,17 +447,17 @@ if element.Key == "AllKeysDictxx":
             code.add(line)
             code.add(
                 """\
-self.AllKeysDictnewdict = {}
+AllKeysDictnewdict = {}
 for k, v in dict.items():
     if not(isinstance(k, tuple) and len(k) == 2 and k[0] == NONE_KEY):
-        self.AllKeysDictnewdict[k] = v
+        AllKeysDictnewdict[k] = v
 for k, v in dict.items():
     if isinstance(k, tuple) and len(k) == 2 and k[0] == NONE_KEY:
-        for i in itertools.count(1):
-            if i not in self.AllKeysDictnewdict:
+        for i in itertools.count(0):
+            if i not in AllKeysDictnewdict:
                 k = i
                 v.Key = i
-                self.AllKeysDictnewdict[k] = v
+                AllKeysDictnewdict[k] = v
                 break""",
                 indent=indent,
             )
@@ -680,7 +682,7 @@ if isinstance(element.Key, collections.abc.Hashable):
                 indent=indent,
             )
 
-        elif line.startswith("def SetOptions("):  # generates extra function to get/set globals
+        elif line.startswith("def SetOptions(") or line.startswith("def set_options("):  # generates extra function to get/set globals
             register_patch(24)
             names = {}
             code.add(line)

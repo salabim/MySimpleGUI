@@ -1,6 +1,11 @@
 Changelog MySimpleGUI
 =====================
-vs 1.1.17  
+vs 1.1.18  
+---------------------
+Elements without a key now start at 0 instead of 1, more in line with PySimpleGUI.
+
+
+vs 1.1.17  2020-12-05
 ---------------------
 -   All elements can now be disabled (grayed out) or enabled (not grayed out) with the methods
     Element.enable() and Element.disable()
