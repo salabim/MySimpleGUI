@@ -15,7 +15,7 @@ import datetime
 
 pysimplegui_name = "PySimpleGUI"
 pysimplegui_patched_name = pysimplegui_name + "_patched"
-__version__ = "1.1.18"
+__version__ = "1.1.19"
 
 
 class peekable:
@@ -175,7 +175,7 @@ self.internal = Window.Internal(self)""",
                 indent=indent,
             )
 
-        elif "def Read(self, timeout=None, timeout_key=TIMEOUT_KEY, close=False):" in line:  # adds attributes to Read
+        elif "def read(self, timeout=none, timeout_key=timeout_key, close=false):" in line.lower():  # adds attributes to Read
             register_patch(1)
             indent = line_to_indent(line)
             code.add(
@@ -641,9 +641,7 @@ def writable(self):
                 )
             )
 
-        elif "text_color=text_color, background_color=background_color" in line and line.strip().startswith(
-            "_print_to_element"
-        ):
+        elif line.strip().startswith("_print_to_element"):
             register_patch(20)
             code.add(
                 line.replace(
@@ -690,7 +688,7 @@ if isinstance(element.Key, collections.abc.Hashable):
                 line = next(lines)
                 code.add(line)
                 left, *right = line.split(" = ")
-                if "#" not in line and "." not in line and line.startswith("        ") and right:
+                if "#" not in line and "." not in line and line.startswith("        ") and right and not "(" in right[0]:
                     names[left.strip()] = right[0]
             code.add(
                 """\
@@ -722,7 +720,7 @@ def {alias}(value = None):
                     )
                 )
 
-        elif line.startswith("def PopupError("):  # changes PopupError behaviour to raise exception
+        elif line.startswith("def PopupError(") or line.startswith("def popup_error("):  # changes PopupError behaviour to raise exception
             register_patch(25)
             indent = line_to_indent(line)
 
@@ -830,7 +828,7 @@ if RAISE_ERRORS:
             indent = line_to_indent(line)
             code.add("RAISE_ERRORS = True", indent=indent)
 
-        elif "ix = random.randint(0, len(lf_values) - 1)" in line:  # no more random theme selection, but exception
+        elif "ix = random.randint(0, len(lf" in line:  # no more random theme selection, but exception
             register_patch(30)
             indent = line_to_indent(line)
             code.add("raise ValueError(index + ' not a valid theme')", indent=indent)

@@ -1,8 +1,15 @@
 Changelog MySimpleGUI
 =====================
-vs 1.1.18  
+vs 1.1.19  2021-02-16
+---------------------
+Now also support PySimpleGUI >= 4.34.
+
+
+vs 1.1.18  2021-01-01
 ---------------------
 Elements without a key now start at 0 instead of 1, more in line with PySimpleGUI.
+
+Now also support PySimpleGUI >= 4.32 where SetOptions was renamed to set_options.
 
 
 vs 1.1.17  2020-12-05
